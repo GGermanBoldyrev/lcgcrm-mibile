@@ -9,16 +9,6 @@ const visiblePassword = ref(false)
 const loading = ref(false)
 const errorMessage = ref('')
 
-const { xs, sm, mdAndUp } = useDisplay()
-
-const cardWidth = computed(() => {
-  if (mdAndUp.value) return 330
-  if (sm.value) return 320
-  return 280
-})
-
-const fieldDensity = computed(() => (xs.value ? 'compact' : 'comfortable'))
-
 const canSubmit = computed(
   () => login.value.trim() !== '' && password.value.trim() !== '' && !loading.value,
 )
@@ -52,11 +42,11 @@ const onLogin = async () => {
   <v-app>
     <v-main class="bg-auth">
       <v-container class="fill-height d-flex align-center justify-center py-8">
-        <v-card :width="cardWidth" class="rounded-lg py-6 px-7" elevation="8">
+        <v-card v-show="true" width="300" class="rounded-lg py-6 px-7 fade-in" elevation="8">
           <v-card-text class="pa-0">
             <!-- Лого -->
             <div class="d-flex justify-center mb-5">
-              <v-img src="/src/assets/images/ui/lcg-logo.png" class="my-4" />
+              <v-img src="/src/assets/images/ui/lcg-logo.png" class="my-5" />
             </div>
 
             <!-- Форма -->
@@ -64,23 +54,26 @@ const onLogin = async () => {
               <v-text-field
                 v-model="login"
                 label="Логин"
-                variant="solo"
-                :density="fieldDensity"
+                variant="outlined"
+                color="primary"
+                density="comfortable"
                 hide-details="auto"
-                class="mb-4"
+                class="mb-5"
                 autofocus
+                :prepend-inner-icon="'mdi-account'"
               />
 
               <v-text-field
                 v-model="password"
                 :type="visiblePassword ? 'text' : 'password'"
                 label="Пароль"
-                variant="solo"
-                :density="fieldDensity"
+                variant="outlined"
+                color="primary"
+                density="comfortable"
                 hide-details="auto"
                 :append-inner-icon="visiblePassword ? 'mdi-eye-off' : 'mdi-eye'"
                 @click:append-inner="visiblePassword = !visiblePassword"
-                class="mb-4"
+                class="mb-5"
               />
 
               <!-- Ошибка -->
@@ -89,7 +82,7 @@ const onLogin = async () => {
                 type="error"
                 variant="tonal"
                 density="compact"
-                class="mb-4"
+                class="mb-5"
               >
                 {{ errorMessage }}
               </v-alert>
@@ -117,5 +110,20 @@ const onLogin = async () => {
   min-height: 100vh;
   background: url('/src/assets/images/ui/main-background.svg') no-repeat center center;
   background-size: cover;
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
