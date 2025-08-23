@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import axios from 'axios'
-import { useDisplay } from 'vuetify' // для брейкпоинтов
+import { useDisplay } from 'vuetify'
+import BaseOutlinedTextField from '@/components/base/BaseOutlinedTextField.vue' // для брейкпоинтов
 
 const login = ref('')
 const password = ref('')
@@ -10,7 +11,7 @@ const loading = ref(false)
 const errorMessage = ref('')
 
 const canSubmit = computed(
-  () => login.value.trim() !== '' && password.value.trim() !== '' && !loading.value,
+  () => login.value.trim() !== '' && password.value.trim() !== '' && !loading.value
 )
 
 const onLogin = async () => {
@@ -20,7 +21,7 @@ const onLogin = async () => {
   try {
     const { data } = await axios.post('https://dev3.lc-rus.org/api/v1/mobile/login', {
       login: login.value,
-      password: password.value,
+      password: password.value
     })
 
     if (data?.token) {
@@ -51,29 +52,21 @@ const onLogin = async () => {
 
             <!-- Форма -->
             <v-form @submit.prevent="onLogin">
-              <v-text-field
+              <BaseOutlinedTextField
                 v-model="login"
                 label="Логин"
-                variant="outlined"
-                color="primary"
-                density="comfortable"
-                hide-details="auto"
                 class="mb-5"
                 autofocus
                 :prepend-inner-icon="'mdi-account'"
               />
 
-              <v-text-field
+              <BaseOutlinedTextField
                 v-model="password"
-                :type="visiblePassword ? 'text' : 'password'"
                 label="Пароль"
-                variant="outlined"
-                color="primary"
-                density="comfortable"
-                hide-details="auto"
+                class="mb-5"
+                :type="visiblePassword ? 'text' : 'password'"
                 :append-inner-icon="visiblePassword ? 'mdi-eye-off' : 'mdi-eye'"
                 @click:append-inner="visiblePassword = !visiblePassword"
-                class="mb-5"
               />
 
               <!-- Ошибка -->
