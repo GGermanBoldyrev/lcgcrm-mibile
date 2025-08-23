@@ -31,15 +31,17 @@ const model = computed({
 </template>
 
 <style scoped>
+
+/*Просто стиль outline*/
 .custom-input :deep(.v-field__outline) {
   --v-field-border-opacity: 0.3;
 }
 
 .custom-input :deep(.v-field__input) {
-  background-color: rgba(74, 144, 226, 0.05) !important;
+  background-color: var(--base-input-bg) !important;
 }
 
 .custom-input :deep(.v-field--variant-outlined .v-field__overlay) {
-  background-color: rgba(74, 144, 226, 0.05) !important;
+  background-color: var(--base-input-bg) !important;
 }
 </style>

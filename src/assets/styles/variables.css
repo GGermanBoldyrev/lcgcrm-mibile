@@ -1,0 +1,3 @@
+:root {
+  --base-input-bg: rgba(var(--v-theme-primary), 0.05);
+}
