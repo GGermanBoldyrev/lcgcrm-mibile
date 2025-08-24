@@ -6,7 +6,7 @@ defineOptions({
 })
 
 const props = defineProps<{
-  modelValue: string | number | null
+  modelValue: string | number | null,
 }>()
 
 const emit = defineEmits(['update:modelValue'])
@@ -26,7 +26,9 @@ const model = computed({
     color="primary"
     density="comfortable"
     class="custom-input"
-    v-bind="$attrs"
+    v-bind="{
+      ...$attrs,
+    }"
   />
 </template>
 

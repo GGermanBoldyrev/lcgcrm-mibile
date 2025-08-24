@@ -14,19 +14,24 @@ const router = createRouter({
     { // Страница авторизации
       path: '/login',
       name: 'login',
-      component: () => import('@/pages/LoginPage.vue')
+      component: () => import('@/pages/LoginPage.vue'),
+      meta: { layout: 'auth' }
     },
 
     { // 404 page
       path: '/:pathMatch(.*)*',
       name: 'NotFound',
-      component: () => import('@/pages/NotFoundPage.vue')
+      component: () => import('@/pages/NotFoundPage.vue'),
+      meta: { requiresAuth: true }
     }
   ]
 })
 
 router.beforeEach((to) => {
   const auth = useAuthStore()
+
+  //auth.clearAuth()
+
   // первый заход — пробуем восстановить сессии
   if (auth.token === null) auth.restoreFromStorage()
 

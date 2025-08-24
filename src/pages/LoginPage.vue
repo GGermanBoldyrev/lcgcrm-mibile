@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import axios from 'axios'
 import BaseOutlinedTextField from '@/components/base/BaseOutlinedTextField.vue'
 import { api } from '@/shared/api.ts' // для брейкпоинтов
+import { useRouter, useRoute } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+const router = useRouter()
+const route = useRoute()
+const auth = useAuthStore()
 
 const login = ref('')
 const password = ref('')
@@ -63,7 +68,7 @@ const onLogin = async () => {
     if (data?.success && data?.token && data?.user) {
       auth.setAuth(data.token, data.user)
       const to = (route.query.redirect as string) || { name: 'main' }
-      router.replace(to)
+      await router.replace(to)
     } else {
       throw new Error('Некорректный ответ авторизации')
     }
@@ -77,73 +82,67 @@ const onLogin = async () => {
 </script>
 
 <template>
-  <v-app>
-    <v-main class="bg-auth">
-      <v-container class="fill-height d-flex align-center justify-center py-8">
-        <v-card v-show="true" width="300" class="rounded-lg py-6 px-7 fade-in" elevation="8">
-          <v-card-text class="pa-0">
-            <!-- Лого -->
-            <div class="d-flex justify-center mb-5">
-              <v-img src="/src/assets/images/ui/lcg-logo.png" class="my-5" />
-            </div>
+  <v-container class="fill-height d-flex align-center justify-center py-8">
+    <v-card v-show="true" width="300" class="rounded-lg py-6 px-7 fade-in" elevation="8">
+      <v-card-text class="pa-0">
+        <!-- Лого -->
+        <div class="d-flex justify-center mb-5">
+          <v-img src="/src/assets/images/ui/lcg-logo.png" class="my-5" />
+        </div>
 
-            <!-- Форма -->
-            <v-form @submit.prevent="onLogin">
-              <BaseOutlinedTextField
-                v-model="login"
-                label="Логин"
-                class="mb-5"
-                autofocus
-                :prepend-inner-icon="'mdi-account'"
-                :error-messages="errors.login"
-              />
+        <!-- Форма -->
+        <v-form autocomplete="on" @submit.prevent="onLogin">
+          <BaseOutlinedTextField
+            v-model="login"
+            label="Логин"
+            class="mb-5"
+            autocomplete="username"
+            name="username"
+            autofocus
+            :prepend-inner-icon="'mdi-account'"
+            :error-messages="errors.login"
+          />
 
-              <BaseOutlinedTextField
-                v-model="password"
-                label="Пароль"
-                class="mb-5"
-                :type="visiblePassword ? 'text' : 'password'"
-                :append-inner-icon="visiblePassword ? 'mdi-eye-off' : 'mdi-eye'"
-                :error-messages="errors.password"
-                @click:append-inner="visiblePassword = !visiblePassword"
-              />
+          <BaseOutlinedTextField
+            v-model="password"
+            label="Пароль"
+            class="mb-5"
+            name="current-password"
+            autocomplete="current-password"
+            :type="visiblePassword ? 'text' : 'password'"
+            :append-inner-icon="visiblePassword ? 'mdi-eye-off' : 'mdi-eye'"
+            :error-messages="errors.password"
+            @click:append-inner="visiblePassword = !visiblePassword"
+          />
 
-              <!-- Ошибка -->
-              <v-alert
-                v-if="errors.general"
-                type="error"
-                variant="tonal"
-                density="compact"
-                class="mb-5"
-              >
-                {{ errors.general }}
-              </v-alert>
+          <!-- Ошибка -->
+          <v-alert
+            v-if="errors.general"
+            type="error"
+            variant="tonal"
+            density="compact"
+            class="mb-5"
+          >
+            {{ errors.general }}
+          </v-alert>
 
-              <v-btn
-                type="submit"
-                color="primary"
-                size="large"
-                block
-                :loading="loading"
-                :disabled="!canSubmit"
-              >
-                Войти
-              </v-btn>
-            </v-form>
-          </v-card-text>
-        </v-card>
-      </v-container>
-    </v-main>
-  </v-app>
+          <v-btn
+            type="submit"
+            color="primary"
+            size="large"
+            block
+            :loading="loading"
+            :disabled="!canSubmit"
+          >
+            Войти
+          </v-btn>
+        </v-form>
+      </v-card-text>
+    </v-card>
+  </v-container>
 </template>
 
 <style scoped>
-.bg-auth {
-  min-height: 100vh;
-  background: url('/src/assets/images/ui/main-background.svg') no-repeat center center;
-  background-size: cover;
-}
-
 .fade-in {
   animation: fadeIn 0.5s ease;
 }
