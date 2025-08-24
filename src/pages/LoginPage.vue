@@ -1,38 +1,75 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import axios from 'axios'
-import { useDisplay } from 'vuetify'
-import BaseOutlinedTextField from '@/components/base/BaseOutlinedTextField.vue' // для брейкпоинтов
+import BaseOutlinedTextField from '@/components/base/BaseOutlinedTextField.vue'
+import { api } from '@/shared/api.ts' // для брейкпоинтов
 
 const login = ref('')
 const password = ref('')
-const visiblePassword = ref(false)
-const loading = ref(false)
-const errorMessage = ref('')
+const visiblePassword = ref<boolean>(false)
+const loading = ref<boolean>(false)
+
+const errors = ref({
+  general: '',
+  login: '',
+  password: ''
+})
 
 const canSubmit = computed(
   () => login.value.trim() !== '' && password.value.trim() !== '' && !loading.value
 )
 
+// Функция для очистки всех ошибок
+const clearErrors = () => {
+  errors.value = { general: '', login: '', password: '' }
+}
+
+// Функция для обработки ошибок API
+const handleApiError = (err: any) => {
+  const baseErrorMessage = 'Ошибка авторизации'
+
+  if (err.response?.status === 401) {
+    const { error, message } = err.response.data
+
+    const errorMap: Record<string, string> = {
+      'user_not_found': 'login',
+      'user_cold': 'login',
+      'invalid_password': 'password'
+    }
+
+    const errorField = errorMap[error]
+    if (errorField) {
+      errors.value[errorField as keyof typeof errors.value] = message
+    } else {
+      errors.value.general = baseErrorMessage
+    }
+  } else {
+    errors.value.general = baseErrorMessage
+  }
+}
+
 const onLogin = async () => {
   if (!canSubmit.value) return
-  errorMessage.value = ''
+
+  clearErrors()
   loading.value = true
+
   try {
-    const { data } = await axios.post('https://dev3.lc-rus.org/api/v1/mobile/login', {
+    const { data } = await api.post('/mobile/login', {
       login: login.value,
       password: password.value
     })
 
-    if (data?.token) {
-      localStorage.setItem('auth_token', data.token)
-      // TODO: роут на дашборд
+    if (data?.success && data?.token && data?.user) {
+      auth.setAuth(data.token, data.user)
+      const to = (route.query.redirect as string) || { name: 'main' }
+      router.replace(to)
     } else {
-      throw new Error('Токен не получен')
+      throw new Error('Некорректный ответ авторизации')
     }
-  } catch (error: any) {
-    console.log(error)
-    errorMessage.value = 'Ошибка авторизации'
+
+  } catch (err: any) {
+    handleApiError(err)
   } finally {
     loading.value = false
   }
@@ -58,6 +95,7 @@ const onLogin = async () => {
                 class="mb-5"
                 autofocus
                 :prepend-inner-icon="'mdi-account'"
+                :error-messages="errors.login"
               />
 
               <BaseOutlinedTextField
@@ -66,18 +104,19 @@ const onLogin = async () => {
                 class="mb-5"
                 :type="visiblePassword ? 'text' : 'password'"
                 :append-inner-icon="visiblePassword ? 'mdi-eye-off' : 'mdi-eye'"
+                :error-messages="errors.password"
                 @click:append-inner="visiblePassword = !visiblePassword"
               />
 
               <!-- Ошибка -->
               <v-alert
-                v-if="errorMessage"
+                v-if="errors.general"
                 type="error"
                 variant="tonal"
                 density="compact"
                 class="mb-5"
               >
-                {{ errorMessage }}
+                {{ errors.general }}
               </v-alert>
 
               <v-btn

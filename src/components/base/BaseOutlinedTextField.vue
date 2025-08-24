@@ -37,10 +37,6 @@ const model = computed({
   --v-field-border-opacity: 0.3;
 }
 
-.custom-input :deep(.v-field__input) {
-  background-color: var(--base-input-bg) !important;
-}
-
 .custom-input :deep(.v-field--variant-outlined .v-field__overlay) {
   background-color: var(--base-input-bg) !important;
 }

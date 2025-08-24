@@ -7,6 +7,9 @@ import router from './router'
 // CSS
 import './assets/styles/variables.css'
 
+// Pinia
+import { useAuthStore } from '@/stores/auth'
+
 // Vuetify
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
@@ -30,5 +33,7 @@ const vuetify = createVuetify({
 
 app.use(createPinia())
 app.use(router)
+
+useAuthStore().restoreFromStorage()
 
 app.use(vuetify).mount('#app')
