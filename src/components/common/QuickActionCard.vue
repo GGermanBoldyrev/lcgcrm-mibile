@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { computed } from 'vue'
-import type { QuickAction } from '@/types/quick-actions'
+import type { QuickAction } from '@/types/quick-actions.ts'
 
 type Props = {
   action: QuickAction

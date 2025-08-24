@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import BaseAppBar from '@/components/base/BaseAppBar.vue'
+import BottomNavigation from '@/components/layout/BottomNavigation.vue'
 </script>
 
 <template>
@@ -8,7 +8,7 @@ import BaseAppBar from '@/components/base/BaseAppBar.vue'
       <slot />
     </v-main>
 
-    <BaseAppBar />
+    <BottomNavigation />
   </v-app>
 </template>
 

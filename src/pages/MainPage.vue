@@ -4,7 +4,7 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
-import QuickActionCard from '@/components/QuickActionCard.vue'
+import QuickActionCard from '@/components/common/QuickActionCard.vue'
 import type { QuickAction } from '@/types/quick-actions'
 
 const router = useRouter()
