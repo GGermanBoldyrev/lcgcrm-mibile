@@ -6,26 +6,13 @@ const router = useRouter()
 
 <template>
   <!-- Нижняя навигация (видна на мобилках) -->
-  <v-bottom-navigation
-    class="d-md-none mobile-bottom-nav"
-    elevation="0"
-    grow
-    height="70"
-  >
-    <v-btn 
-      class="nav-btn" 
-      variant="text"
-      @click="router.push({ name: 'main' })"
-    >
+  <v-bottom-navigation class="d-md-none mobile-bottom-nav" elevation="0" grow height="70">
+    <v-btn class="nav-btn" variant="text" @click="router.push({ name: 'main' })">
       <v-icon size="24">mdi-home</v-icon>
       <span class="nav-text">Главная</span>
     </v-btn>
-    
-    <v-btn 
-      class="nav-btn" 
-      variant="text"
-      @click="router.push('/profile')"
-    >
+
+    <v-btn class="nav-btn" variant="text" @click="router.push('/profile')">
       <v-icon size="24">mdi-account</v-icon>
       <span class="nav-text">Профиль</span>
     </v-btn>
@@ -48,6 +35,10 @@ const router = useRouter()
 }
 
 /* Отключить bg подсветку при клике */
+.nav-btn {
+  max-width: none !important;
+}
+
 .nav-btn :deep(.v-btn__overlay) {
   display: none !important;
 }
@@ -67,6 +58,7 @@ const router = useRouter()
     transform: translateX(-50%) translateY(100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(-50%) translateY(0);
     opacity: 1;
