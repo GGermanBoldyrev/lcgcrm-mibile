@@ -1,16 +1,10 @@
-
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
 
 import QuickActionCard from '@/components/common/QuickActionCard.vue'
 import type { QuickAction } from '@/types/quick-actions'
 
 const router = useRouter()
-const auth = useAuthStore()
-
-const displayName = computed(() => auth.user?.login ?? 'Пользователь')
 
 const quickActions: QuickAction[] = [
   {
@@ -21,7 +15,7 @@ const quickActions: QuickAction[] = [
       icon: 'mdi-qrcode-scan',
       to: { name: 'scanner' }
     }
-  },
+  }
 ]
 </script>
 
