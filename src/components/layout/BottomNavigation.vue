@@ -6,7 +6,7 @@ const router = useRouter()
 
 <template>
   <!-- Нижняя навигация (видна на мобилках) -->
-  <v-bottom-navigation class="d-md-none mobile-bottom-nav glossy" elevation="0" grow height="70">
+  <v-bottom-navigation class="d-md-none mobile-bottom-nav glossy" elevation="8" grow height="70">
     <v-btn class="nav-btn" variant="text" @click="router.push({ name: 'main' })">
       <v-icon size="24">mdi-home</v-icon>
       <span class="nav-text">Главная</span>

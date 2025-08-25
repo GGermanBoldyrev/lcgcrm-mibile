@@ -10,10 +10,10 @@ import logoUrl from '@/assets/images/ui/lcg-logo.png'
 const router = useRouter()
 const auth = useAuthStore()
 
-const userLogin = computed(() => auth.user?.login?.trim() || 'Пользователь')
-const ariaProfile = computed(() => `Профиль: ${userLogin.value}`)
+const userDisplayName = computed(() => auth.user.login)
+const ariaProfile = computed(() => `Профиль: ${userDisplayName.value}`)
 
-const goHome = () => router.push({ name: 'home' })
+const goHome = () => router.push({ name: 'main' })
 const goProfile = () => router.push({ name: 'profile' })
 </script>
 
@@ -30,7 +30,7 @@ const goProfile = () => router.push({ name: 'profile' })
     <template #append>
       <v-btn variant="text" class="appbar-btn profile-btn" height="100%" :aria-label="ariaProfile" @click="goProfile">
         <v-icon size="28" color="primary" class="mr-2">mdi-account-circle</v-icon>
-        <span class="user-login text-subtitle-2">{{ userLogin }}</span>
+        <span class="user-login text-subtitle-2">{{ userDisplayName }}</span>
       </v-btn>
     </template>
   </v-app-bar>

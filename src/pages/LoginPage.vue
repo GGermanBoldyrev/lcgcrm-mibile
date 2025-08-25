@@ -79,6 +79,21 @@ const onLogin = async () => {
     loading.value = false
   }
 }
+
+// Функция для тестирования с моковыми данными
+const loginWithMockData = () => {
+  const mockUser = {
+    login: 'testuser',
+    fullName: 'Иванов Иван Иванович',
+    email: 'ivanov.ii@company.com',
+    department: 'Отдел разработки',
+    position: 'Старший разработчик',
+    phone: '+7 (999) 123-45-67'
+  }
+  
+  auth.setAuth('mock-token-123', mockUser)
+  router.replace({ name: 'main' })
+}
 </script>
 
 <template>
@@ -108,6 +123,19 @@ const onLogin = async () => {
           <v-btn type="submit" color="primary" size="large" block class="glossy rounded-base-md" :loading="loading"
             :disabled="!canSubmit">
             Войти
+          </v-btn>
+
+          <!-- Кнопка для тестирования с моковыми данными -->
+          <v-divider class="my-4" />
+          <v-btn 
+            variant="outlined" 
+            color="secondary" 
+            size="large" 
+            block 
+            class="glossy rounded-base-md"
+            @click="loginWithMockData"
+          >
+            Войти (тест)
           </v-btn>
         </v-form>
       </v-card-text>

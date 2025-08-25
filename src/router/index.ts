@@ -13,6 +13,11 @@ const routes = [
     component: () => import('@/pages/HubPage.vue')
   },
   {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('@/pages/ProfilePage.vue')
+  },
+  {
     path: '/login',
     name: 'login',
     component: () => import('@/pages/LoginPage.vue'),
