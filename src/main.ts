@@ -6,6 +6,7 @@ import router from './router'
 
 // CSS
 import './assets/styles/variables.css'
+import './assets/styles/glossy-theme.css'
 
 // Pinia
 import { useAuthStore } from '@/stores/auth'

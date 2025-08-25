@@ -15,7 +15,25 @@ const quickActions: QuickAction[] = [
       icon: 'mdi-qrcode-scan',
       to: { name: 'scanner' }
     }
-  }
+  },
+  {
+    label: 'Канцелярия',
+    icon: 'mdi-file-document-outline',
+    to: { name: 'hub' },
+    secondaryCard: {
+      icon: 'mdi-qrcode-scan',
+      to: { name: 'scanner' }
+    }
+  },
+  {
+    label: 'Канцелярия',
+    icon: 'mdi-file-document-outline',
+    to: { name: 'hub' },
+    secondaryCard: {
+      icon: 'mdi-qrcode-scan',
+      to: { name: 'scanner' }
+    }
+  },
 ]
 </script>
 

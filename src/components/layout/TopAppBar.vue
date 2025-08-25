@@ -18,7 +18,7 @@ const goProfile = () => router.push({ name: 'profile' })
 </script>
 
 <template>
-  <v-app-bar color="surface" flat class="top-app-bar">
+  <v-app-bar flat class="top-app-bar">
     <!-- ЛЕВАЯ КНОПКА (лого) -->
     <template #prepend>
       <v-btn
@@ -52,6 +52,7 @@ const goProfile = () => router.push({ name: 'profile' })
 .top-app-bar {
   height: 84px;
   border-bottom: 1px solid rgba(0,0,0,.06);
+  background-color: var(--app-bg-glass) !important;
 }
 
 /* растягиваем внутренности toolbar на всю высоту */
