@@ -1,6 +1,0 @@
-:root {
-  --base-input-bg: rgba(var(--v-theme-primary), 0.05);
-
-  /* Нейтральный фон с легким оттенком */
-  --app-bg-gradient: linear-gradient(135deg, #253D91 0%, #00B0FF 100%);
-}

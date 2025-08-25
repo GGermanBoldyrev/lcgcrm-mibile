@@ -5,8 +5,7 @@ import App from './App.vue'
 import router from './router'
 
 // CSS
-import './assets/styles/variables.css'
-import './assets/styles/glossy-theme.css'
+import './assets/styles/main.scss'
 
 // Pinia
 import { useAuthStore } from '@/stores/auth'

@@ -1,0 +1,21 @@
+/* base переменные */
+:root {
+  --base-input-bg: rgba(var(--v-theme-primary), 0.05);
+
+  /* Нейтральный фон с легким оттенком */
+  --app-bg-gradient: linear-gradient(135deg, #253d91 0%, #00b0ff 100%);
+}
+
+/* glass тема */
+:root {
+  --glass-bg-opacity: 0.1;
+  --glass-border-opacity: 0.2;
+  --glass-blur: 12px;
+  --glass-saturation: 140%;
+  --glass-shadow: rgba(0, 0, 0, 0.1);
+  --glass-highlight: rgba(255, 255, 255, 0.3);
+
+  --radius-glass: 16px;
+  --radius-glass-sm: 12px;
+  --radius-glass-lg: 24px;
+}
