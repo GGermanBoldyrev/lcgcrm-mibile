@@ -42,6 +42,7 @@ const router = useRouter()
 .nav-text {
   font-size: 11px !important;
   font-weight: 500 !important;
+  margin-top: 3px;
 }
 
 /* Анимация появления */

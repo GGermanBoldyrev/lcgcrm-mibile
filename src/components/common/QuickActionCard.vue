@@ -38,7 +38,7 @@ const goToSecondary = () => {
 <template>
   <div class="qa-container">
     <!-- Основная карта -->
-    <v-card class="qa-card rounded-lg pa-5 glossy" :class="{ 'qa-card--compact': isCompact }" elevation="8"
+    <v-card class="qa-card rounded-lg pa-4 glossy" :class="{ 'qa-card--compact': isCompact }" elevation="8"
       role="button" tabindex="0" :aria-label="label || 'Действие'" @click="goToPrimary" @keyup.enter="goToPrimary">
       <div class="d-flex align-center" :class="{ 'justify-center': isCompact }">
         <v-avatar size="44" :class="{ 'mr-4': !isCompact }" :color="color">
@@ -49,7 +49,7 @@ const goToSecondary = () => {
     </v-card>
 
     <!-- Вторичная карта -->
-    <v-card v-if="hasSecondaryCard" class="qa-card qa-card--secondary rounded-lg pa-5 ml-3 glossy"
+    <v-card v-if="hasSecondaryCard" class="qa-card qa-card--secondary rounded-lg pa-4 ml-3 glossy"
       :class="{ 'qa-card--compact': isSecondaryCompact }" elevation="8" role="button" tabindex="0"
       :aria-label="secondaryLabel || 'Дополнительное действие'" @click="goToSecondary" @keyup.enter="goToSecondary">
       <div class="d-flex align-center" :class="{ 'justify-center': isSecondaryCompact }">

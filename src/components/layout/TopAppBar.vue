@@ -21,7 +21,7 @@ const goProfile = () => router.push({ name: 'profile' })
   <v-app-bar flat class="top-app-bar glossy">
     <!-- ЛЕВАЯ КНОПКА (лого) -->
     <template #prepend>
-      <v-btn variant="text" class="appbar-btn logo-btn" height="100%" :aria-label="APP_NAME" @click="goHome">
+      <v-btn variant="text" class="appbar-btn logo-btn" height="100%" @click="goHome">
         <v-img :src="logoUrl" alt="logo" width="135" contain />
       </v-btn>
     </template>
@@ -38,8 +38,8 @@ const goProfile = () => router.push({ name: 'profile' })
 
 <style scoped>
 .top-app-bar {
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
   height: 82px;
   border-bottom: 1px solid rgba(0, 0, 0, .06);
 }

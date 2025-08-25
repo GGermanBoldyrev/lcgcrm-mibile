@@ -101,7 +101,7 @@ const onLogin = async () => {
             @click:append-inner="visiblePassword = !visiblePassword" />
 
           <!-- Ошибка -->
-          <v-alert v-if="errors.general" type="error" variant="tonal" density="compact" class="mb-5">
+          <v-alert v-if="errors.general" type="error" variant="tonal" density="compact" class="mb-5 glossy">
             {{ errors.general }}
           </v-alert>
 
