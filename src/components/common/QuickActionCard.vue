@@ -88,7 +88,7 @@ const goToSecondary = () => {
 .qa-card {
   transition: transform .12s ease, box-shadow .12s ease;
   cursor: pointer;
-  background-color: rgba(var(--v-theme-surface), 0.96);
+  background-color: var(--app-bg-glass) !important;
   height: 100%;
   display: flex;
   flex: 1;

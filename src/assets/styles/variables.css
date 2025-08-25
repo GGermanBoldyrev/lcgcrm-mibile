@@ -2,10 +2,7 @@
   --base-input-bg: rgba(var(--v-theme-primary), 0.05);
 
   /* Нейтральный фон с легким оттенком */
-  --app-bg-gradient: linear-gradient(
-    135deg,
-    #fafbfc 0%,
-    #f4f6f8 50%,
-    rgba(var(--v-theme-primary), 0.5) 100%
-  );
+  --app-bg-gradient: linear-gradient(135deg, #253D91 0%, #00B0FF 100%);
+
+  --app-bg-glass: rgba(255, 255, 255, 0.9);
 }
