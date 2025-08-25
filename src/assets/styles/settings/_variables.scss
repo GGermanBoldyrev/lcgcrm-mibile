@@ -27,7 +27,6 @@
   --glass-shadow-opacity: 0.25;
   --glass-highlight-opacity: 0.25; /* верхний тонкий блик */
   --glass-inner-stroke-opacity: 0.6; /* внутренняя 0.5px подсветка */
-  --glass-radius: 18px; /* общий радиус плиток */
 
   /* производные */
   --glass-background: rgba(var(--glass-bg-rgb), var(--glass-bg-opacity));

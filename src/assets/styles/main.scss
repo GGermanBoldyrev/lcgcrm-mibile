@@ -1,5 +1,8 @@
 // Базовые настройки
-@import 'settings/variables';
+@forward 'settings/variables';
 
 // Компоненты
-@import 'components/glassmorphism';
+@forward 'base/base';
+
+// Компоненты
+@forward 'components/glassmorphism';

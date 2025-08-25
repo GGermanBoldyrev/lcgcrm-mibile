@@ -1,7 +1,7 @@
 .glossy {
   position: relative;
   overflow: hidden; /* важно для псевдослоёв */
-  border-radius: var(--glass-radius);
+  border-radius: var(--radius-md);
 
   background: var(--glass-background) !important;
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation)) !important;

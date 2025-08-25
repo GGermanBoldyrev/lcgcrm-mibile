@@ -15,31 +15,90 @@ const model = computed({
   get: () => props.modelValue,
   set: (value) => emit('update:modelValue', value),
 })
-
 </script>
 
 <template>
-  <v-text-field
-    v-model="model"
-    hide-details="auto"
-    variant="outlined"
-    color="primary"
-    density="comfortable"
-    class="custom-input"
-    v-bind="{
-      ...$attrs,
-    }"
-  />
+  <v-text-field v-model="model" hide-details="auto" variant="solo" color="primary" density="comfortable"
+    class="custom-input glossy-input" v-bind="{ ...$attrs }" />
 </template>
 
 <style scoped>
+/* Применяем glossy стили к внутреннему полю */
+.glossy-input :deep(.v-field) {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md) !important;
 
-/*Просто стиль outline*/
-.custom-input :deep(.v-field__outline) {
-  --v-field-border-opacity: 0.3;
+  background: var(--glass-background) !important;
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation)) !important;
+
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: 0 5px 15px var(--glass-shadow), inset 0 1px 0 var(--glass-highlight) !important;
 }
 
-.custom-input :deep(.v-field--variant-outlined .v-field__overlay) {
-  background-color: var(--base-input-bg) !important;
+/* Убираем стандартные стили Vuetify */
+.glossy-input :deep(.v-field__overlay) {
+  display: none !important;
+}
+
+.glossy-input :deep(.v-field__outline) {
+  display: none !important;
+}
+
+/* Псевдоэлементы для glass эффекта */
+.glossy-input :deep(.v-field)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 0.5px var(--glass-inner-stroke);
+}
+
+.glossy-input :deep(.v-field)::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.6) 0%,
+      rgba(255, 255, 255, 0.35) 14%,
+      rgba(255, 255, 255, 0.1) 55%,
+      rgba(255, 255, 255, 0.02) 100%);
+  mix-blend-mode: soft-light;
+  opacity: 0.9;
+}
+
+/* Состояния */
+.glossy-input:hover :deep(.v-field) {
+  --glass-bg-opacity: calc(var(--glass-bg-opacity) + 0.04);
+}
+
+.glossy-input:active :deep(.v-field) {
+  box-shadow: 0 4px 11px var(--glass-shadow), inset 0 1px 0 var(--glass-highlight);
+}
+
+/* Фокус */
+.glossy-input :deep(.v-field--focused) {
+  --glass-bg-opacity: calc(var(--glass-bg-opacity) + 0.02);
+  box-shadow:
+    0 10px 30px var(--glass-shadow),
+    inset 0 1px 0 var(--glass-highlight),
+    0 0 0 2px rgba(var(--v-theme-primary), 0.3) !important;
+  transition: 200ms;
+}
+
+/* Fallback для браузеров без backdrop-filter */
+@supports not (backdrop-filter: blur(1px)) {
+  .glossy-input :deep(.v-field) {
+    background: rgb(255 255 255 / 0.88) !important;
+  }
+
+  .glossy-input :deep(.v-field)::before,
+  .glossy-input :deep(.v-field)::after {
+    display: none;
+  }
 }
 </style>

@@ -1,30 +1,43 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
+const routes = [
+  {
+    path: '/',
+    name: 'main',
+    component: () => import('@/pages/MainPage.vue')
+  },
+  {
+    path: '/hub',
+    name: 'hub',
+    component: () => import('@/pages/HubPage.vue')
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('@/pages/LoginPage.vue'),
+    meta: { layout: 'auth' } // public route
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('@/pages/NotFoundPage.vue')
+  }
+]
+
+const routesWithAuth = routes.map(route => {
+  if (route.name !== 'login') {
+    return {
+      ...route,
+      meta: { ...(route.meta || {}), requiresAuth: true }
+    }
+  }
+  return route
+})
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'main',
-      component: () => import('@/pages/MainPage.vue'),
-      meta: { requiresAuth: true }
-    },
-
-    { // Страница авторизации
-      path: '/login',
-      name: 'login',
-      component: () => import('@/pages/LoginPage.vue'),
-      meta: { layout: 'auth' }
-    },
-
-    { // 404 page
-      path: '/:pathMatch(.*)*',
-      name: 'NotFound',
-      component: () => import('@/pages/NotFoundPage.vue'),
-      meta: { requiresAuth: true }
-    }
-  ]
+  routes: routesWithAuth
 })
 
 router.beforeEach((to) => {
