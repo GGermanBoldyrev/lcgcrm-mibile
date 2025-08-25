@@ -4,18 +4,35 @@
 
   /* Нейтральный фон с легким оттенком */
   --app-bg-gradient: linear-gradient(135deg, #253d91 0%, #00b0ff 100%);
+
+  /* Radius */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
 }
 
 /* glass тема */
 :root {
-  --glass-bg-opacity: 0.1;
-  --glass-border-opacity: 0.2;
-  --glass-blur: 12px;
-  --glass-saturation: 140%;
-  --glass-shadow: rgba(0, 0, 0, 0.1);
-  --glass-highlight: rgba(255, 255, 255, 0.3);
+  /* фон приложения */
+  --app-bg-gradient: linear-gradient(135deg, #253d91 0%, #00b0ff 100%);
 
-  --radius-glass: 16px;
-  --radius-glass-sm: 12px;
-  --radius-glass-lg: 24px;
+  /* glass tokens */
+  --glass-blur: 24px;
+  --glass-saturation: 180%;
+
+  /* цвета/прозрачности */
+  --glass-bg-rgb: 255, 255, 255;
+  --glass-bg-opacity: 0.8; /* базовая «молочность» материала */
+  --glass-border-opacity: 0.35;
+  --glass-shadow-opacity: 0.25;
+  --glass-highlight-opacity: 0.25; /* верхний тонкий блик */
+  --glass-inner-stroke-opacity: 0.6; /* внутренняя 0.5px подсветка */
+  --glass-radius: 18px; /* общий радиус плиток */
+
+  /* производные */
+  --glass-background: rgba(var(--glass-bg-rgb), var(--glass-bg-opacity));
+  --glass-border: rgba(255, 255, 255, var(--glass-border-opacity));
+  --glass-shadow: rgba(0, 0, 0, var(--glass-shadow-opacity));
+  --glass-highlight: rgba(255, 255, 255, var(--glass-highlight-opacity));
+  --glass-inner-stroke: rgba(255, 255, 255, var(--glass-inner-stroke-opacity));
 }

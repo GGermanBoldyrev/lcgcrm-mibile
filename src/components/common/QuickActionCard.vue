@@ -38,16 +38,8 @@ const goToSecondary = () => {
 <template>
   <div class="qa-container">
     <!-- Основная карта -->
-    <v-card
-      class="qa-card rounded-lg pa-5"
-      :class="{ 'qa-card--compact': isCompact }"
-      elevation="8"
-      role="button"
-      tabindex="0"
-      :aria-label="label || 'Действие'"
-      @click="goToPrimary"
-      @keyup.enter="goToPrimary"
-    >
+    <v-card class="qa-card rounded-lg pa-5 glossy" :class="{ 'qa-card--compact': isCompact }" elevation="8"
+      role="button" tabindex="0" :aria-label="label || 'Действие'" @click="goToPrimary" @keyup.enter="goToPrimary">
       <div class="d-flex align-center" :class="{ 'justify-center': isCompact }">
         <v-avatar size="44" :class="{ 'mr-4': !isCompact }" :color="color">
           <v-icon size="26" color="white">{{ icon }}</v-icon>
@@ -57,17 +49,9 @@ const goToSecondary = () => {
     </v-card>
 
     <!-- Вторичная карта -->
-    <v-card
-      v-if="hasSecondaryCard"
-      class="qa-card qa-card--secondary rounded-lg pa-5 ml-3"
-      :class="{ 'qa-card--compact': isSecondaryCompact }"
-      elevation="8"
-      role="button"
-      tabindex="0"
-      :aria-label="secondaryLabel || 'Дополнительное действие'"
-      @click="goToSecondary"
-      @keyup.enter="goToSecondary"
-    >
+    <v-card v-if="hasSecondaryCard" class="qa-card qa-card--secondary rounded-lg pa-5 ml-3 glossy"
+      :class="{ 'qa-card--compact': isSecondaryCompact }" elevation="8" role="button" tabindex="0"
+      :aria-label="secondaryLabel || 'Дополнительное действие'" @click="goToSecondary" @keyup.enter="goToSecondary">
       <div class="d-flex align-center" :class="{ 'justify-center': isSecondaryCompact }">
         <v-avatar size="44" :class="{ 'mr-4': !isSecondaryCompact }" :color="secondaryColor">
           <v-icon size="26" color="white">{{ secondaryIcon }}</v-icon>
@@ -86,10 +70,9 @@ const goToSecondary = () => {
 }
 
 .qa-card {
-  border-radius: var() !important;
+  border-radius: var(--radius-lg) !important;
   transition: transform .12s ease, box-shadow .12s ease;
   cursor: pointer;
-  background-color: var(--app-bg-glass) !important;
   height: 100%;
   display: flex;
   flex: 1;
@@ -103,9 +86,10 @@ const goToSecondary = () => {
   flex: 0 0 auto;
 }
 
-.qa-card:hover, .qa-card:focus-visible {
+.qa-card:hover,
+.qa-card:focus-visible {
   transform: translateY(-2px);
-  box-shadow: 0 10px 26px rgba(0,0,0,.18);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, .18);
   outline: none;
 }
 

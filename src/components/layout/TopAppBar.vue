@@ -18,29 +18,17 @@ const goProfile = () => router.push({ name: 'profile' })
 </script>
 
 <template>
-  <v-app-bar flat class="top-app-bar">
+  <v-app-bar flat class="top-app-bar glossy">
     <!-- ЛЕВАЯ КНОПКА (лого) -->
     <template #prepend>
-      <v-btn
-        variant="text"
-        class="appbar-btn logo-btn"
-        height="100%"
-        :aria-label="APP_NAME"
-        @click="goHome"
-      >
+      <v-btn variant="text" class="appbar-btn logo-btn" height="100%" :aria-label="APP_NAME" @click="goHome">
         <v-img :src="logoUrl" alt="logo" width="135" contain />
       </v-btn>
     </template>
 
     <!-- ПРАВАЯ КНОПКА (профиль) -->
     <template #append>
-      <v-btn
-        variant="text"
-        class="appbar-btn profile-btn"
-        height="100%"
-        :aria-label="ariaProfile"
-        @click="goProfile"
-      >
+      <v-btn variant="text" class="appbar-btn profile-btn" height="100%" :aria-label="ariaProfile" @click="goProfile">
         <v-icon size="28" color="primary" class="mr-2">mdi-account-circle</v-icon>
         <span class="user-login text-subtitle-2">{{ userLogin }}</span>
       </v-btn>
@@ -50,9 +38,10 @@ const goProfile = () => router.push({ name: 'profile' })
 
 <style scoped>
 .top-app-bar {
-  height: 84px;
-  border-bottom: 1px solid rgba(0,0,0,.06);
-  background-color: var(--app-bg-glass) !important;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  height: 82px;
+  border-bottom: 1px solid rgba(0, 0, 0, .06);
 }
 
 /* растягиваем внутренности toolbar на всю высоту */
