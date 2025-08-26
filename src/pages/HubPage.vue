@@ -83,7 +83,7 @@ const onFindClick = async () => {
                       :disabled="loading"
                       @keyup.enter="mockSearchById"
                     />
-                    <div v-if="!loading" class="search-append-external mb-4"
+                    <div v-if="!loading" class="search-append-external mb-4 glossy"
                       :class="{ 'search-append-external--disabled': !isReady() }"
                       role="button"
                       :aria-label="'Найти реестр'"
