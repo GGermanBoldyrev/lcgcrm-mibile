@@ -38,8 +38,9 @@ const goToSecondary = () => {
 <template>
   <div class="qa-container">
     <!-- Основная карта -->
-    <v-card class="qa-card rounded-lg pa-4 glossy" :class="{ 'qa-card--compact': isCompact }" elevation="8"
-      role="button" tabindex="0" :aria-label="label || 'Действие'" @click="goToPrimary" @keyup.enter="goToPrimary">
+    <v-card class="qa-card pa-4 glossy" :class="{ 'qa-card--compact': isCompact }" elevation="8"
+      role="button" tabindex="0" :aria-label="label || 'Действие'" @click="goToPrimary" @keyup.enter="goToPrimary"
+      style="border-radius: var(--radius-md);">
       <div class="d-flex align-center" :class="{ 'justify-center': isCompact }">
         <v-avatar size="44" :class="{ 'mr-4': !isCompact }" :color="color">
           <v-icon size="26" color="white">{{ icon }}</v-icon>
@@ -49,9 +50,10 @@ const goToSecondary = () => {
     </v-card>
 
     <!-- Вторичная карта -->
-    <v-card v-if="hasSecondaryCard" class="qa-card qa-card--secondary rounded-lg pa-4 ml-3 glossy"
+    <v-card v-if="hasSecondaryCard" class="qa-card qa-card--secondary pa-4 ml-3 glossy"
       :class="{ 'qa-card--compact': isSecondaryCompact }" elevation="8" role="button" tabindex="0"
-      :aria-label="secondaryLabel || 'Дополнительное действие'" @click="goToSecondary" @keyup.enter="goToSecondary">
+      :aria-label="secondaryLabel || 'Дополнительное действие'" @click="goToSecondary" @keyup.enter="goToSecondary"
+      style="border-radius: var(--radius-md);">
       <div class="d-flex align-center" :class="{ 'justify-center': isSecondaryCompact }">
         <v-avatar size="44" :class="{ 'mr-4': !isSecondaryCompact }" :color="secondaryColor">
           <v-icon size="26" color="white">{{ secondaryIcon }}</v-icon>
@@ -70,7 +72,6 @@ const goToSecondary = () => {
 }
 
 .qa-card {
-  border-radius: var(--radius-lg) !important;
   transition: transform .12s ease, box-shadow .12s ease;
   cursor: pointer;
   height: 100%;

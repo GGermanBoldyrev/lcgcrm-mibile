@@ -98,7 +98,7 @@ const loginWithMockData = () => {
 
 <template>
   <v-container class="fill-height d-flex align-center justify-center py-8">
-    <v-card v-show="true" width="310" class="glossy rounded-base-lg pa-9" elevation="8">
+    <v-card v-show="true" width="310" class="glossy pa-9" elevation="8" style="border-radius: var(--radius-lg);">
       <v-card-text class="pa-0">
         <!-- Лого -->
         <div class="d-flex justify-center mb-5">
@@ -120,8 +120,8 @@ const loginWithMockData = () => {
             {{ errors.general }}
           </v-alert>
 
-          <v-btn type="submit" color="primary" size="large" block class="glossy rounded-base-md" :loading="loading"
-            :disabled="!canSubmit">
+          <v-btn type="submit" color="primary" size="large" block class="glossy" :loading="loading"
+            :disabled="!canSubmit" style="border-radius: var(--radius-md);">
             Войти
           </v-btn>
 
@@ -132,8 +132,9 @@ const loginWithMockData = () => {
             color="secondary" 
             size="large" 
             block 
-            class="glossy rounded-base-md"
+            class="glossy"
             @click="loginWithMockData"
+            style="border-radius: var(--radius-md);"
           >
             Войти (тест)
           </v-btn>

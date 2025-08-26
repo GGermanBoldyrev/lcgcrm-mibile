@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
 
 import QuickActionCard from '@/components/common/QuickActionCard.vue'
 import type { QuickAction } from '@/types/quick-actions'
-
-const router = useRouter()
 
 const quickActions: QuickAction[] = [
   {
@@ -16,30 +13,14 @@ const quickActions: QuickAction[] = [
       to: { name: 'scanner' }
     }
   },
-  {
-    label: 'Канцелярия',
-    icon: 'mdi-file-document-outline',
-    to: { name: 'hub' },
-    secondaryCard: {
-      icon: 'mdi-qrcode-scan',
-      to: { name: 'scanner' }
-    }
-  },
-  {
-    label: 'Канцелярия',
-    icon: 'mdi-file-document-outline',
-    to: { name: 'hub' },
-    secondaryCard: {
-      icon: 'mdi-qrcode-scan',
-      to: { name: 'scanner' }
-    }
-  },
+
 ]
 </script>
 
 <template>
-  <v-main class="bg-main">
+  <v-main>
     <v-container>
+      <!-- Быстрые действия -->
       <section aria-label="Быстрые действия">
         <v-row align="stretch" v-memo="[quickActions]">
           <v-col cols="12" v-for="(action, i) in quickActions" :key="`block-${i}`">
@@ -52,5 +33,5 @@ const quickActions: QuickAction[] = [
 </template>
 
 <style scoped>
-
+/* Стили уже определены в QuickActionCard */
 </style>

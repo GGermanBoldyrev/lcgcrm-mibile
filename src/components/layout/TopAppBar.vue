@@ -10,7 +10,7 @@ import logoUrl from '@/assets/images/ui/lcg-logo.png'
 const router = useRouter()
 const auth = useAuthStore()
 
-const userDisplayName = computed(() => auth.user.login)
+const userDisplayName = computed(() => auth.user?.login || 'Пользователь')
 const ariaProfile = computed(() => `Профиль: ${userDisplayName.value}`)
 
 const goHome = () => router.push({ name: 'main' })

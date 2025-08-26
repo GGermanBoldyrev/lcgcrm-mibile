@@ -91,7 +91,7 @@ const handleLogout = () => {
               <v-divider class="mb-6" />
 
               <v-btn block color="primary" size="large" prepend-icon="mdi-logout" @click="handleLogout"
-                class="logout-btn glossy rounded-base-md">
+                class="logout-btn glossy" style="border-radius: var(--radius-md);">
                 Выйти
               </v-btn>
             </v-card-text>
