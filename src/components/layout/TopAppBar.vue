@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
@@ -15,47 +15,13 @@ const ariaProfile = computed(() => `Профиль: ${userDisplayName.value}`)
 const goHome = () => router.push({ name: 'main' })
 const goProfile = () => router.push({ name: 'profile' })
 
-const isVisible = ref(false)
-
-onMounted(() => {
-  // Небольшая задержка для плавного появления
-  setTimeout(() => {
-    isVisible.value = true
-  }, 100)
-})
 </script>
 
 <template>
-  <v-app-bar 
-    v-show="isVisible"
-    flat 
-    class="top-app-bar glossy"
-    v-motion
-    :initial="{ 
-      opacity: 0,
-      y: -20,
-      scale: 0.98
-    }"
-    :enter="{ 
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        type: 'spring',
-        stiffness: 200,
-        damping: 25,
-        duration: 600
-      }
-    }"
-  >
+  <v-app-bar flat class="top-app-bar glossy">
     <!-- ЛЕВАЯ КНОПКА (лого) -->
     <template #prepend>
-      <v-btn 
-        variant="text" 
-        class="appbar-btn logo-btn" 
-        height="100%" 
-        @click="goHome"
-      >
+      <v-btn variant="text" class="appbar-btn logo-btn" height="100%" @click="goHome">
         <v-img :src="logoUrl" alt="logo" width="135" contain />
       </v-btn>
     </template>

@@ -90,7 +90,7 @@ const loginWithMockData = () => {
     position: 'Старший разработчик',
     phone: '+7 (999) 123-45-67'
   }
-  
+
   auth.setAuth('mock-token-123', mockUser)
   router.replace({ name: 'main' })
 }
@@ -102,89 +102,56 @@ const loginWithMockData = () => {
       <v-card-text class="pa-0">
         <!-- Лого -->
         <div class="d-flex justify-center mb-5">
-          <v-img 
-            src="/src/assets/images/ui/lcg-logo.png" 
-            class="my-5"
-            v-motion
-            :initial="{ 
-              opacity: 0,
-              scale: 0.8,
-              y: -20
-            }"
-            :enter="{ 
-              opacity: 1,
-              scale: 1,
-              y: 0,
-              transition: {
-                type: 'spring',
-                stiffness: 150,
-                damping: 15,
-                duration: 1200
-              }
-            }"
-          />
+          <v-img src="/src/assets/images/ui/lcg-logo.png" class="my-5" v-motion :initial="{
+            opacity: 0,
+            scale: 0.8,
+            y: -20
+          }" :enter="{
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            transition: {
+              type: 'spring',
+              stiffness: 150,
+              damping: 15,
+              duration: 1200
+            }
+          }" />
         </div>
 
         <!-- Форма -->
         <v-form autocomplete="on" @submit.prevent="onLogin">
-          <BaseOutlinedTextField 
-            v-model="login" 
-            placeholder="Логин" 
-            class="mb-5" 
-            autocomplete="username"
-            name="username" 
-            autofocus 
-            :prepend-inner-icon="'mdi-account'" 
-            :error-messages="errors.login"
-            v-motion
-            :initial="{ 
+          <BaseOutlinedTextField v-model="login" placeholder="Логин" class="mb-5" autocomplete="username"
+            name="username" autofocus :prepend-inner-icon="'mdi-account'" :error-messages="errors.login" v-motion
+            :initial="{
               opacity: 0
-            }"
-            :enter="{ 
+            }" :enter="{
               opacity: 1,
               transition: {
                 duration: 600,
                 delay: 200
               }
-            }"
-          />
+            }" />
 
-          <BaseOutlinedTextField 
-            v-model="password" 
-            placeholder="Пароль" 
-            class="mb-5" 
-            name="current-password"
-            autocomplete="current-password" 
-            :type="visiblePassword ? 'text' : 'password'"
-            :append-inner-icon="visiblePassword ? 'mdi-eye-off' : 'mdi-eye'" 
-            :error-messages="errors.password"
-            @click:append-inner="visiblePassword = !visiblePassword"
-            v-motion
-            :initial="{ 
+          <BaseOutlinedTextField v-model="password" placeholder="Пароль" class="mb-5" name="current-password"
+            autocomplete="current-password" :type="visiblePassword ? 'text' : 'password'"
+            :append-inner-icon="visiblePassword ? 'mdi-eye-off' : 'mdi-eye'" :error-messages="errors.password"
+            @click:append-inner="visiblePassword = !visiblePassword" v-motion :initial="{
               opacity: 0
-            }"
-            :enter="{ 
+            }" :enter="{
               opacity: 1,
               transition: {
                 duration: 600,
                 delay: 300
               }
-            }"
-          />
+            }" />
 
           <!-- Ошибка -->
-          <v-alert 
-            v-if="errors.general" 
-            type="error" 
-            variant="tonal" 
-            density="compact" 
-            class="mb-5 glossy"
-            v-motion
-            :initial="{ 
+          <v-alert v-if="errors.general" type="error" variant="tonal" density="compact" class="mb-5 glossy" v-motion
+            :initial="{
               opacity: 0,
               scale: 0.9
-            }"
-            :enter="{ 
+            }" :enter="{
               opacity: 1,
               scale: 1,
               transition: {
@@ -193,55 +160,33 @@ const loginWithMockData = () => {
                 damping: 20,
                 duration: 400
               }
-            }"
-          >
+            }">
             {{ errors.general }}
           </v-alert>
 
-          <v-btn 
-            type="submit" 
-            color="primary" 
-            size="large" 
-            block 
-            class="glossy" 
-            :loading="loading"
-            :disabled="!canSubmit"
-            style="border-radius: var(--radius-md);"
-            v-motion
-            :initial="{ 
+          <v-btn type="submit" color="primary" size="large" block class="glossy" :loading="loading"
+            :disabled="!canSubmit" style="border-radius: var(--radius-md);" v-motion :initial="{
               opacity: 0
-            }"
-            :enter="{ 
+            }" :enter="{
               opacity: 1,
               transition: {
                 duration: 400
               }
-            }"
-          >
+            }">
             Войти
           </v-btn>
 
           <!-- Кнопка для тестирования с моковыми данными -->
           <v-divider class="my-4" />
-          <v-btn 
-            variant="outlined" 
-            color="secondary" 
-            size="large" 
-            block 
-            class="glossy"
-            @click="loginWithMockData"
-            style="border-radius: var(--radius-md);"
-            v-motion
-            :initial="{ 
+          <v-btn variant="outlined" color="secondary" size="large" block class="glossy" @click="loginWithMockData"
+            style="border-radius: var(--radius-md);" v-motion :initial="{
               opacity: 0
-            }"
-            :enter="{ 
+            }" :enter="{
               opacity: 1,
               transition: {
                 duration: 400
               }
-            }"
-          >
+            }">
             Войти (тест)
           </v-btn>
         </v-form>
