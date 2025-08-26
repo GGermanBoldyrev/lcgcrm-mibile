@@ -13,7 +13,7 @@ const userProfile = computed(() => ({
   email: auth.user?.email || 'Нет',
   subdivisionName: auth.user?.subdivisionName || 'Нет',
   additionalInfo: auth.user?.additionalInfo || 'Нет',
-  phoneNumber: auth.user?.phoneNumber || 'Нет'
+  phone: auth.user?.phone || 'Нет'
 }))
 
 const handleLogout = () => {
@@ -96,7 +96,7 @@ const handleLogout = () => {
                   <v-icon color="primary" class="mr-3">mdi-phone-outline</v-icon>
                   <div>
                     <p class="text-caption text-medium-emphasis mb-0">Телефон</p>
-                    <p class="text-body-1 font-weight-medium">{{ userProfile.phoneNumber }}</p>
+                    <p class="text-body-1 font-weight-medium">{{ userProfile.phone }}</p>
                   </div>
                 </div>
               </div>

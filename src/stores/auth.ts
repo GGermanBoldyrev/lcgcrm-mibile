@@ -8,9 +8,9 @@ export const useAuthStore = defineStore('auth', {
       login?: string
       fullName?: string
       email?: string
-      departmentName?: string
+      subdivisionName?: string
       additionalInfo?: string
-      phoneNumber?: string
+      phone?: string
     } | null
   }),
   getters: {
