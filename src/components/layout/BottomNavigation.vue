@@ -6,7 +6,12 @@ const router = useRouter()
 
 <template>
   <!-- Нижняя навигация (видна на мобилках) -->
-  <v-bottom-navigation class="d-md-none mobile-bottom-nav glossy" elevation="8" grow height="70">
+  <v-bottom-navigation 
+    class="d-md-none mobile-bottom-nav glossy" 
+    elevation="8" 
+    grow 
+    height="70"
+  >
     <v-btn class="nav-btn" variant="text" @click="router.push({ name: 'main' })">
       <v-icon size="24">mdi-home</v-icon>
       <span class="nav-text">Главная</span>
@@ -45,20 +50,5 @@ const router = useRouter()
   margin-top: 3px;
 }
 
-/* Анимация появления */
-.mobile-bottom-nav {
-  animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateX(-50%) translateY(100%);
-    opacity: 0;
-  }
-
-  to {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-  }
-}
+/* Убираем старую анимацию, так как теперь используем @vueuse/motion */
 </style>

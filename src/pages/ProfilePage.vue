@@ -29,7 +29,27 @@ const handleLogout = () => {
       <!-- Карточка профиля -->
       <v-row>
         <v-col cols="12" md="8" lg="6">
-          <v-card class="profile-card glossy" elevation="8">
+          <v-card 
+            class="profile-card glossy" 
+            elevation="8"
+            v-motion
+            :initial="{ 
+              opacity: 0,
+              y: 40,
+              scale: 0.9
+            }"
+            :enter="{ 
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              transition: {
+                type: 'spring',
+                stiffness: 250,
+                damping: 20,
+                duration: 500
+              }
+            }"
+          >
             <v-card-text class="pa-6">
               <!-- Аватар и основная информация -->
               <div class="d-flex align-center mb-6">
@@ -90,8 +110,25 @@ const handleLogout = () => {
               <!-- Кнопка логаута -->
               <v-divider class="mb-6" />
 
-              <v-btn block color="primary" size="large" prepend-icon="mdi-logout" @click="handleLogout"
-                class="logout-btn glossy" style="border-radius: var(--radius-md);">
+              <v-btn 
+                block 
+                color="primary" 
+                size="large" 
+                prepend-icon="mdi-logout" 
+                @click="handleLogout"
+                class="logout-btn glossy" 
+                style="border-radius: var(--radius-md);"
+                v-motion
+                :initial="{ 
+                  opacity: 0
+                }"
+                :enter="{ 
+                  opacity: 1,
+                  transition: {
+                    duration: 400
+                  }
+                }"
+              >
                 Выйти
               </v-btn>
             </v-card-text>

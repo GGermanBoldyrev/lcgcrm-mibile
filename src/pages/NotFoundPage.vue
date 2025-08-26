@@ -14,10 +14,61 @@ const goHome = () => {
       <v-card width="400" class="py-8 px-10 text-center glossy" elevation="8" style="border-radius: var(--radius-lg);">
         <v-card-text class="pa-0">
           <!-- 404 -->
-          <h1 class="error-title">404</h1>
-          <p class="error-subtitle">Страница не найдена</p>
+          <h1 
+            class="error-title"
+            v-motion
+            :initial="{ 
+              opacity: 0,
+              scale: 0.5
+            }"
+            :enter="{ 
+              opacity: 1,
+              scale: 1,
+              transition: {
+                type: 'spring',
+                stiffness: 100,
+                damping: 10,
+                duration: 1000
+              }
+            }"
+          >
+            404
+          </h1>
+          <p 
+            class="error-subtitle"
+            v-motion
+            :initial="{ 
+              opacity: 0
+            }"
+            :enter="{ 
+              opacity: 1,
+              transition: {
+                duration: 600,
+                delay: 300
+              }
+            }"
+          >
+            Страница не найдена
+          </p>
 
-          <v-btn color="primary" size="large" class="mt-6 glossy" @click="goHome" style="border-radius: var(--radius-md);">
+          <v-btn 
+            color="primary" 
+            size="large" 
+            class="mt-6 glossy" 
+            @click="goHome" 
+            style="border-radius: var(--radius-md);"
+            v-motion
+            :initial="{ 
+              opacity: 0
+            }"
+            :enter="{ 
+              opacity: 1,
+              transition: {
+                duration: 600,
+                delay: 500
+              }
+            }"
+          >
             На главную
           </v-btn>
         </v-card-text>
