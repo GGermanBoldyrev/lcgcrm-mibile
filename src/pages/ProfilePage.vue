@@ -8,12 +8,12 @@ const auth = useAuthStore()
 
 // Данные профиля из store или моковые данные по умолчанию
 const userProfile = computed(() => ({
-  fullName: auth.user?.fullName || 'Иванов Иван Иванович',
-  login: auth.user?.login || 'user123',
-  email: auth.user?.email || 'ivanov.ii@company.com',
-  department: auth.user?.department || 'Отдел разработки',
-  position: auth.user?.position || 'Старший разработчик',
-  phone: auth.user?.phone || '+7 (999) 123-45-67'
+  fullName: auth.user?.fullName || 'Фамилия Имя Отчество',
+  login: auth.user?.login || 'Нет',
+  email: auth.user?.email || 'Нет',
+  subdivisionName: auth.user?.subdivisionName || 'Нет',
+  additionalInfo: auth.user?.additionalInfo || 'Нет',
+  phoneNumber: auth.user?.phoneNumber || 'Нет'
 }))
 
 const handleLogout = () => {
@@ -79,16 +79,16 @@ const handleLogout = () => {
                 <div class="d-flex align-center mb-4">
                   <v-icon color="primary" class="mr-3">mdi-domain</v-icon>
                   <div>
-                    <p class="text-caption text-medium-emphasis mb-0">Отдел</p>
-                    <p class="text-body-1 font-weight-medium">{{ userProfile.department }}</p>
+                    <p class="text-caption text-medium-emphasis mb-0">Отделение</p>
+                    <p class="text-body-1 font-weight-medium">{{ userProfile.subdivisionName }}</p>
                   </div>
                 </div>
 
                 <div class="d-flex align-center mb-4">
                   <v-icon color="primary" class="mr-3">mdi-briefcase-outline</v-icon>
                   <div>
-                    <p class="text-caption text-medium-emphasis mb-0">Должность</p>
-                    <p class="text-body-1 font-weight-medium">{{ userProfile.position }}</p>
+                    <p class="text-caption text-medium-emphasis mb-0">Дополнительная информация</p>
+                    <p class="text-body-1 font-weight-medium">{{ userProfile.additionalInfo }}</p>
                   </div>
                 </div>
 
@@ -96,7 +96,7 @@ const handleLogout = () => {
                   <v-icon color="primary" class="mr-3">mdi-phone-outline</v-icon>
                   <div>
                     <p class="text-caption text-medium-emphasis mb-0">Телефон</p>
-                    <p class="text-body-1 font-weight-medium">{{ userProfile.phone }}</p>
+                    <p class="text-body-1 font-weight-medium">{{ userProfile.phoneNumber }}</p>
                   </div>
                 </div>
               </div>

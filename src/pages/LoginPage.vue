@@ -147,7 +147,7 @@ const loginWithMockData = () => {
             }" />
 
           <!-- Ошибка -->
-          <v-alert v-if="errors.general" type="error" variant="tonal" density="compact" class="mb-5 glossy" v-motion
+          <v-alert v-if="errors.general" type="error" variant="tonal" density="compact" class="mb-5 glossy rounded-base-md" v-motion
             :initial="{
               opacity: 0,
               scale: 0.9
