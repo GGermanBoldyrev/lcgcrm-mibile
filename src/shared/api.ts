@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { type AxiosInstance } from 'axios'
 import { useAuthStore } from '@/stores/auth'
 import router from '@/router'
 

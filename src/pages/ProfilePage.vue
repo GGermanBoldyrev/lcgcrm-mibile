@@ -52,7 +52,6 @@ const handleLogout = () => {
                 </v-avatar>
                 <div>
                   <h2 class="text-h5 font-weight-bold mb-1">{{ userProfile.fullName }}</h2>
-                  <p class="text-body-1 text-medium-emphasis mb-0">{{ userProfile.position }}</p>
                 </div>
               </div>
 
