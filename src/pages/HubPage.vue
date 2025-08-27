@@ -1,81 +1,44 @@
 <script setup lang="ts">
 import { ref, nextTick, computed } from 'vue'
 import BaseOutlinedTextField from '@/components/base/BaseOutlinedTextField.vue'
-import { api } from '@/shared/api'
+import { useHubSearch } from '@/composables/hub/useHubSearch'
 
-const searchId = ref('')
-const loading = ref(false)
 const showSearch = ref(false)
 const searchField = ref()
-const error = ref('')
-const errorType = ref('error')
 
-// New state to hold the fetched document data
-const documentData = ref<any>(null)
+const {
+  data: documentData,
+  loading,
+  error,
+  errorType,
+  searchById,
+  resetSearch,
+} = useHubSearch()
 
-const isReady = () => searchId.value.trim().length > 0 && !loading.value
+const searchId = ref('')
 
-const searchById = async () => {
-  const code = searchId.value.trim()
-  if (!code) {
-    return
-  }
-
-  try {
-    loading.value = true
-    error.value = ''
-    documentData.value = null // Clear previous results on new search
-    errorType.value = 'error'
-
-    const { data } = await api.post('/mobile/barcode/info', { code })
-
-    // --- THIS IS THE KEY CHANGE ---
-    // On success, store the data to be displayed
-    documentData.value = data
-    console.log(data)
-
-  } catch (e: any) {
-    const status = e.response?.status
-    const errorCode = e.response?.data?.code || e.response?.data?.error
-    if (status === 404 || errorCode === 'not_found') {
-      errorType.value = 'warning'
-      error.value = e.response?.data?.message || 'Код не найден'
-    } else if (status === 422 || status === 500 || errorCode === 'invalid_code') {
-      errorType.value = 'error'
-      error.value = e.response?.data?.message || e.response?.data?.error || 'Ошибка запроса'
-    } else {
-      errorType.value = 'error'
-      error.value = e.response?.data?.message || e.response?.data?.error || e.message || 'Ошибка запроса'
-    }
-    console.log('[API] Error:', e.response?.data || e.message)
-  } finally {
-    loading.value = false
-  }
-}
-
-// Function to reset the view and search again
-const resetSearch = () => {
-  documentData.value = null
-  searchId.value = ''
-  error.value = ''
-  // Focus the input again for better UX
-  nextTick(() => {
-    searchField.value?.$el?.querySelector('input')?.focus()
-  })
-}
+const isReady = () =>
+  searchId.value.trim().length > 0 && !loading.value
 
 const onFindClick = async () => {
   if (!showSearch.value) {
     showSearch.value = true
     await nextTick()
-    // Force focus to open keyboard
     searchField.value?.$el?.querySelector('input')?.focus()
     return
   }
-  await searchById()
+  await searchById(searchId.value.trim())
 }
 
-// Helper to format the date nicely
+// Reset с дополнительным UX-фокусом
+const handleReset = () => {
+  resetSearch()
+  searchId.value = ''
+  nextTick(() => {
+    searchField.value?.$el?.querySelector('input')?.focus()
+  })
+}
+
 const formattedDate = computed(() => {
   if (!documentData.value?.meta?.createdAt) return ''
   return new Date(documentData.value.meta.createdAt).toLocaleString('ru-RU', {
@@ -90,7 +53,7 @@ const formattedDate = computed(() => {
 const displayItems = computed(() => {
   if (!documentData.value) return []
 
-  const items = [
+  return [
     {
       icon: 'mdi-list-status',
       label: 'Текущий статус',
@@ -126,28 +89,23 @@ const displayItems = computed(() => {
       label: 'Контакты',
       value: documentData.value.address?.contact,
     },
-  ]
-
-  return items.filter(item => item.value)
+  ].filter(item => item.value)
 })
 
-const statusColorMap: { [key: string]: string } = {
+const statusColorMap: Record<string, string> = {
   primary: 'primary',
   success: 'success',
   warning: 'warning',
   danger: 'error',
 }
-
-const getStatusColor = (style: string) => {
-  return statusColorMap[style] || 'grey';
-}
+const getStatusColor = (style: string) =>
+  statusColorMap[style] || 'grey'
 
 </script>
 
 <template>
   <v-main>
     <v-container>
-      <!-- Main Card -->
       <v-row>
         <v-col cols="12" md="8" lg="6">
           <v-card class="hub-card glossy" elevation="8" v-motion :initial="{ opacity: 0, y: 40, scale: 0.9 }"
@@ -155,9 +113,9 @@ const getStatusColor = (style: string) => {
             <v-card-text class="pa-6">
               <div class="d-flex align-center mb-6">
                 <v-avatar size="80" color="primary" class="mr-4">
-                  <!-- Change icon if data is loaded -->
-                  <v-icon size="40" color="white">{{ documentData ? 'mdi-file-check-outline' :
-                    'mdi-file-document-outline' }}</v-icon>
+                  <v-icon size="40" color="white">
+                    {{ documentData ? 'mdi-file-check-outline' : 'mdi-file-document-outline' }}
+                  </v-icon>
                 </v-avatar>
                 <div>
                   <h2 class="text-h5 font-weight-bold mb-1">Канцелярия</h2>
@@ -171,50 +129,43 @@ const getStatusColor = (style: string) => {
 
               <!-- DATA DISPLAY SECTION -->
               <div v-if="documentData" class="result-display" v-motion-fade>
-                  <!-- Перебираем подготовленные данные -->
-                  <div
-                      v-for="item in displayItems"
-                      :key="item.label"
-                      class="detail-item d-flex align-start mb-6"
-                  >
-                      <!-- Иконка в кружке -->
-                      <v-avatar size="40" class="mr-4">
-                          <v-icon :icon="item.icon" color="primary" size="24" />
-                      </v-avatar>
-
-                      <!-- Текстовый блок -->
-                      <div>
-                          <p class="text-caption text-medium-emphasis mb-0">{{ item.label }}</p>
-
-                          <div v-if="item.label === 'Текущий статус'">
-                              <v-chip
-                                  :color="getStatusColor(documentData.status.style)"
-                                  variant="tonal"
-                                  size="small"
-                              >
-                                  {{ item.value }}
-                              </v-chip>
-                          </div>
-
-                          <!-- Для всех остальных полей... -->
-                          <p v-else class="text-wrap" v-html="item.value"></p>
-                      </div>
+                <div
+                  v-for="item in displayItems"
+                  :key="item.label"
+                  class="detail-item d-flex align-start mb-6"
+                >
+                  <v-avatar size="40" class="mr-4">
+                    <v-icon :icon="item.icon" color="primary" size="24" />
+                  </v-avatar>
+                  <div>
+                    <p class="text-caption text-medium-emphasis mb-0">{{ item.label }}</p>
+                    <div v-if="item.label === 'Текущий статус'">
+                      <v-chip
+                        :color="getStatusColor(documentData.status.style)"
+                        variant="tonal"
+                        size="small"
+                      >
+                        {{ item.value }}
+                      </v-chip>
+                    </div>
+                    <p v-else class="text-wrap" v-html="item.value"></p>
                   </div>
+                </div>
 
-                  <v-divider class="my-2" />
+                <v-divider class="my-2" />
 
-                  <v-btn
-                      block
-                      variant="outlined"
-                      color="secondary"
-                      size="large"
-                      prepend-icon="mdi-magnify"
-                      class="glossy mt-6"
-                      style="border-radius: var(--radius-md);"
-                      @click="resetSearch"
-                  >
-                      Искать снова
-                  </v-btn>
+                <v-btn
+                  block
+                  variant="outlined"
+                  color="secondary"
+                  size="large"
+                  prepend-icon="mdi-magnify"
+                  class="glossy mt-6"
+                  style="border-radius: var(--radius-md);"
+                  @click="handleReset"
+                >
+                  Искать снова
+                </v-btn>
               </div>
 
               <!-- SEARCH UI -->
@@ -222,12 +173,20 @@ const getStatusColor = (style: string) => {
                 <v-expand-x-transition>
                   <div v-if="showSearch" class="search-row" v-motion :initial="{ opacity: 0, x: -20 }"
                     :enter="{ opacity: 1, x: 0, transition: { duration: 350 } }">
-                    <BaseOutlinedTextField ref="searchField" v-model="searchId" placeholder="Введите номер документа"
-                      class="search-input mb-4" :disabled="loading" @keyup.enter="searchById" />
+                    <BaseOutlinedTextField
+                      ref="searchField"
+                      v-model="searchId"
+                      placeholder="Введите номер документа"
+                      class="search-input mb-4"
+                      :disabled="loading"
+                      @keyup.enter="searchById(searchId.trim())"
+                    />
                     <div v-if="!loading" class="search-append-external mb-4 glossy"
                       :class="{ 'search-append-external--disabled': !isReady() }" role="button"
-                      :aria-label="'Найти документ'" tabindex="0" @click.stop="isReady() && searchById()"
-                      @keyup.enter.stop="isReady() && searchById()">
+                      :aria-label="'Найти документ'" tabindex="0"
+                      @click.stop="isReady() && searchById(searchId.trim())"
+                      @keyup.enter.stop="isReady() && searchById(searchId.trim())"
+                    >
                       <v-icon size="22" :color="isReady() ? 'white' : 'grey'">mdi-magnify</v-icon>
                     </div>
                     <div v-else class="search-append-external mb-4 search-append-external--loading" aria-live="polite"
@@ -237,7 +196,6 @@ const getStatusColor = (style: string) => {
                   </div>
                 </v-expand-x-transition>
 
-                <!-- Error under search field -->
                 <v-expand-transition>
                   <v-alert v-if="error" :type="errorType" variant="tonal" density="compact"
                     class="mb-4 glossy rounded-base-md">
@@ -249,7 +207,8 @@ const getStatusColor = (style: string) => {
                   :enter="{ opacity: 1, transition: { duration: 300 } }">
                   <v-btn block color="primary" size="large" prepend-icon="mdi-file-search" class="mb-4 glossy"
                     style="border-radius: var(--radius-md);" :loading="loading" :disabled="loading"
-                    @click="onFindClick">
+                    @click="onFindClick"
+                  >
                     Найти документ
                   </v-btn>
                 </div>
