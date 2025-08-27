@@ -4,6 +4,7 @@ import BaseOutlinedTextField from '@/components/base/BaseOutlinedTextField.vue'
 import { useHubSearch } from '@/composables/hub/useHubSearch'
 
 const showSearch = ref(false)
+const showQrScanner = ref(false)
 const searchField = ref()
 
 const {
@@ -34,9 +35,53 @@ const onFindClick = async () => {
 const handleReset = () => {
   resetSearch()
   searchId.value = ''
-  nextTick(() => {
-    searchField.value?.$el?.querySelector('input')?.focus()
-  })
+  showSearch.value = false
+  showQrScanner.value = false
+}
+
+// QR Scanner functions
+const onQrScanClick = () => {
+  if (showSearch.value) {
+    showSearch.value = false
+  }
+  showQrScanner.value = true
+
+  // TODO: Заменить на реальное QR-сканирование
+  // Для интеграции с реальным QR-сканером:
+  // 1. Подключить библиотеку, например: @zxing/browser или quagga2
+  // 2. Инициализировать камеру и stream
+  // 3. Заменить simulateQrScan() на реальную функцию сканирования
+  // 4. Обработать результат сканирования и вызвать searchById с полученным кодом
+
+  simulateQrScan() // Временная симуляция
+}
+
+// Симуляция сканирования QR-кода (для демонстрации)
+// TODO: Заменить на реальную функцию QR-сканирования
+const simulateQrScan = async () => {
+  try {
+    // Симулируем процесс сканирования (2 секунды)
+    await new Promise(resolve => setTimeout(resolve, 2000))
+
+        // Симулируем получение кода (в реальности это будет результат сканирования)
+    const scannedCode = "DOC123456" // Замените на реальный код из QR-сканера
+
+    // Выполняем поиск с полученным кодом
+    await searchById(scannedCode)
+
+    // Скрываем интерфейс сканера
+    showQrScanner.value = false
+  } catch (error) {
+    console.error('QR scanning error:', error)
+    showQrScanner.value = false
+    // Здесь можно добавить обработку ошибок сканирования
+  }
+}
+
+// Функция для повторного сканирования
+const handleScanAgain = () => {
+  resetSearch()
+  onQrScanClick()
 }
 
 const formattedDate = computed(() => {
@@ -174,33 +219,101 @@ const getStatusColor = (style: string) =>
                   </div>
                 </div>
 
-                <v-divider class="mb-6" />
+                                <v-divider class="mb-6" />
 
-                <v-btn
-                  block
-                  variant="outlined"
-                  color="secondary"
-                  size="large"
-                  prepend-icon="mdi-magnify"
-                  class="glossy"
-                  style="border-radius: var(--radius-md);"
-                  @click="handleReset"
-                  v-motion
-                  :initial="{
-                    opacity: 0,
-                    y: 10
-                  }"
-                  :enter="{
-                    opacity: 1,
-                    y: 0,
-                    transition: {
-                      duration: 400,
-                      delay: 600
-                    }
-                  }"
-                >
-                  Искать снова
-                </v-btn>
+                <div class="repeat-actions">
+                  <v-btn
+                    block
+                    variant="outlined"
+                    color="secondary"
+                    size="large"
+                    prepend-icon="mdi-magnify"
+                    class="glossy mb-3"
+                    style="border-radius: var(--radius-md);"
+                    @click="handleReset"
+                    v-motion
+                    :initial="{
+                      opacity: 0,
+                      y: 10
+                    }"
+                    :enter="{
+                      opacity: 1,
+                      y: 0,
+                      transition: {
+                        duration: 400,
+                        delay: 600
+                      }
+                    }"
+                  >
+                    Искать снова
+                  </v-btn>
+
+                  <v-btn
+                    block
+                    variant="outlined"
+                    color="primary"
+                    size="large"
+                    prepend-icon="mdi-qrcode-scan"
+                    class="glossy"
+                    style="border-radius: var(--radius-md);"
+                    @click="handleScanAgain"
+                    v-motion
+                    :initial="{
+                      opacity: 0,
+                      y: 10
+                    }"
+                    :enter="{
+                      opacity: 1,
+                      y: 0,
+                      transition: {
+                        duration: 400,
+                        delay: 700
+                      }
+                    }"
+                  >
+                    Сканировать заново
+                  </v-btn>
+                </div>
+              </div>
+
+              <!-- QR SCANNER UI -->
+              <div v-else-if="showQrScanner" class="qr-scanner-container" v-motion :initial="{
+                opacity: 0,
+                scale: 0.9,
+                y: 30
+              }" :enter="{
+                opacity: 1,
+                scale: 1,
+                y: 0,
+                transition: {
+                  duration: 500,
+                  type: 'spring',
+                  stiffness: 200,
+                  damping: 25
+                }
+              }">
+                <div class="qr-scanner-display">
+                  <div class="qr-scanner-frame">
+                    <div class="qr-scanner-overlay">
+                      <div class="qr-scanner-corners">
+                        <div class="corner top-left"></div>
+                        <div class="corner top-right"></div>
+                        <div class="corner bottom-left"></div>
+                        <div class="corner bottom-right"></div>
+                      </div>
+                      <div class="scanning-line"></div>
+                    </div>
+                  </div>
+
+                  <div class="qr-scanner-text mt-4">
+                    <v-icon size="32" color="primary" class="mb-2">mdi-qrcode-scan</v-icon>
+                    <h3 class="text-h6 mb-2">Сканирование QR-кода</h3>
+                    <p class="text-body-2 text-medium-emphasis">
+                      Наведите камеру на QR-код документа
+                    </p>
+                    <v-progress-linear indeterminate color="primary" class="mt-4"></v-progress-linear>
+                  </div>
+                </div>
               </div>
 
               <!-- SEARCH UI -->
@@ -311,8 +424,11 @@ const getStatusColor = (style: string) =>
                   </v-btn>
                 </div>
 
-                <v-btn block variant="outlined" color="secondary" size="large" prepend-icon="mdi-qrcode-scan"
-                  class="glossy qr-btn" style="border-radius: var(--radius-md);" v-motion :initial="{
+                                <v-btn block variant="outlined" color="secondary" size="large" prepend-icon="mdi-qrcode-scan"
+                  class="glossy qr-btn" style="border-radius: var(--radius-md);"
+                  @click="onQrScanClick"
+                  :disabled="loading"
+                  v-motion :initial="{
                     opacity: 0,
                     y: 20
                   }" :enter="{
@@ -414,6 +530,10 @@ const getStatusColor = (style: string) =>
   max-width: 400px;
 }
 
+.repeat-actions {
+  max-width: 400px;
+}
+
 .text-wrap {
   white-space: normal;
   line-height: 1.5;
@@ -485,5 +605,118 @@ const getStatusColor = (style: string) =>
 .v-btn:active:not(:disabled) {
   transform: translateY(0);
   transition-duration: 0.1s;
+}
+
+/* QR Scanner Styles */
+.qr-scanner-container {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.qr-scanner-display {
+  text-align: center;
+}
+
+.qr-scanner-frame {
+  position: relative;
+  width: 250px;
+  height: 250px;
+  margin: 0 auto;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(45deg,
+    rgba(var(--v-theme-primary), 0.1) 0%,
+    rgba(var(--v-theme-primary), 0.05) 100%);
+  border: 2px solid rgba(var(--v-theme-primary), 0.3);
+  overflow: hidden;
+}
+
+.qr-scanner-overlay {
+  position: absolute;
+  inset: 20px;
+  border-radius: var(--radius-md);
+}
+
+.qr-scanner-corners {
+  position: absolute;
+  inset: 0;
+}
+
+.corner {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgb(var(--v-theme-primary));
+}
+
+.corner.top-left {
+  top: 0;
+  left: 0;
+  border-right: none;
+  border-bottom: none;
+  border-top-left-radius: var(--radius-sm);
+}
+
+.corner.top-right {
+  top: 0;
+  right: 0;
+  border-left: none;
+  border-bottom: none;
+  border-top-right-radius: var(--radius-sm);
+}
+
+.corner.bottom-left {
+  bottom: 0;
+  left: 0;
+  border-right: none;
+  border-top: none;
+  border-bottom-left-radius: var(--radius-sm);
+}
+
+.corner.bottom-right {
+  bottom: 0;
+  right: 0;
+  border-left: none;
+  border-top: none;
+  border-bottom-right-radius: var(--radius-sm);
+}
+
+.scanning-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgb(var(--v-theme-primary)) 50%,
+    transparent 100%);
+  animation: scan 2s linear infinite;
+  box-shadow: 0 0 10px rgba(var(--v-theme-primary), 0.6);
+}
+
+@keyframes scan {
+  0% {
+    top: 0;
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    top: calc(100% - 2px);
+    opacity: 1;
+  }
+}
+
+.qr-scanner-text {
+  animation: pulse-text 2s ease-in-out infinite;
+}
+
+@keyframes pulse-text {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 </style>
