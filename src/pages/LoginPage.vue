@@ -2,6 +2,9 @@
 import BaseOutlinedTextField from '@/components/base/BaseOutlinedTextField.vue'
 import { useLoginForm } from '@/composables/login/useLoginForm'
 
+// импорт ассета как модуль (Vite)
+import logoUrl from '@/assets/images/ui/lcg-logo.png'
+
 const {
   state,
   canSubmit,
@@ -16,7 +19,7 @@ const {
     <v-card v-show="true" width="310" class="glossy pa-9" elevation="8" style="border-radius: var(--radius-lg);">
       <v-card-text class="pa-0">
         <div class="d-flex justify-center mb-5">
-          <v-img src="/src/assets/images/ui/lcg-logo.png" class="my-5" v-motion :initial="{
+          <v-img :src="logoUrl" class="my-5" v-motion :initial="{
             opacity: 0,
             scale: 0.8,
             y: -20
