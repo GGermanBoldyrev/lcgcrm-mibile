@@ -46,6 +46,8 @@ const {
             autofocus
             :prepend-inner-icon="'mdi-account'"
             :error-messages="state.errors.login"
+            @input="() => {}"
+            @change="() => {}"
             v-motion :initial="{ opacity: 0 }" :enter="{ opacity: 1, transition: { duration: 600, delay: 200 } }"
           />
 
@@ -58,6 +60,8 @@ const {
             :type="state.visiblePassword ? 'text' : 'password'"
             :append-inner-icon="state.visiblePassword ? 'mdi-eye-off' : 'mdi-eye'"
             :error-messages="state.errors.password"
+            @input="() => {}"
+            @change="() => {}"
             @click:append-inner="state.visiblePassword = !state.visiblePassword"
             v-motion :initial="{ opacity: 0 }" :enter="{ opacity: 1, transition: { duration: 600, delay: 300 } }"
           />

@@ -1,4 +1,4 @@
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, nextTick, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { api } from '@/shared/api.ts'
@@ -58,6 +58,43 @@ export function useLoginForm() {
     nextTick(() => {
       loginFieldRef.value?.$el?.querySelector('input')?.focus()
     })
+
+  // Функция для проверки автозаполнения
+  const checkAutofill = () => {
+    nextTick(() => {
+      const loginInput = loginFieldRef.value?.$el?.querySelector('input[name="username"]')
+      const passwordInput = document.querySelector('input[name="current-password"]')
+
+      if (loginInput?.value && !state.value.login) {
+        state.value.login = loginInput.value
+      }
+      if (passwordInput?.value && !state.value.password) {
+        state.value.password = passwordInput.value
+      }
+    })
+  }
+
+  // Добавляем обработчики для отслеживания автозаполнения
+  onMounted(() => {
+    // Проверяем автозаполнение через небольшую задержку
+    setTimeout(checkAutofill, 100)
+    setTimeout(checkAutofill, 500)
+    setTimeout(checkAutofill, 1000)
+
+    // Добавляем обработчики событий для автозаполнения
+    const handleAutofill = () => {
+      setTimeout(checkAutofill, 50)
+    }
+
+    document.addEventListener('input', handleAutofill)
+    document.addEventListener('change', handleAutofill)
+
+    // Очистка при размонтировании
+    return () => {
+      document.removeEventListener('input', handleAutofill)
+      document.removeEventListener('change', handleAutofill)
+    }
+  })
 
   const handleApiError = (err: any) => {
     const resp = err.response
