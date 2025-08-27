@@ -6,7 +6,7 @@ const props = defineProps<{
   showSearch: boolean
   loading: boolean
   error: string | null
-  errorType: string
+  errorType: 'error' | 'warning'
 }>()
 
 const emit = defineEmits<{
