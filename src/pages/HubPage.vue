@@ -1,27 +1,44 @@
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
 import BaseOutlinedTextField from '@/components/base/BaseOutlinedTextField.vue'
+import { api } from '@/shared/api'
 
 const searchId = ref('')
 const loading = ref(false)
 const showSearch = ref(false)
 const searchField = ref()
+const error = ref('')
+const errorType = ref('error')
 
 const isReady = () => searchId.value.trim().length > 0 && !loading.value
 
-const mockSearchById = async () => {
-  const id = searchId.value.trim()
-  if (!id) {
-    console.log('[Mock API] searchById: empty id, skip')
+const searchById = async () => {
+  const code = searchId.value.trim()
+  if (!code) {
     return
   }
+
   try {
     loading.value = true
-    console.log(`[Mock API] GET /mobile/registry/${id}`)
-    await new Promise(resolve => setTimeout(resolve, 600))
-    console.log('[Mock API] Response:', { success: true, id, title: `Реестр #${id}` })
-  } catch (e) {
-    console.log('[Mock API] Error:', e)
+    error.value = ''
+    errorType.value = 'error'
+    const { data } = await api.post('/mobile/barcode/info', { code })
+    console.log(data)
+  } catch (e: any) {
+    const status = e.response?.status
+    const errorCode = e.response?.data?.code || e.response?.data?.error
+
+    if (status === 404 || errorCode === 'not_found') {
+      errorType.value = 'warning'
+      error.value = e.response?.data?.message || 'Код не найден'
+    } else if (status === 422 || status === 500 || errorCode === 'invalid_code') {
+      errorType.value = 'error'
+      error.value = e.response?.data?.message || e.response?.data?.error || 'Ошибка запроса'
+    } else {
+      errorType.value = 'error'
+      error.value = e.response?.data?.message || e.response?.data?.error || e.message || 'Ошибка запроса'
+    }
+    console.log('[API] Error:', e.response?.data || e.message)
   } finally {
     loading.value = false
   }
@@ -31,10 +48,11 @@ const onFindClick = async () => {
   if (!showSearch.value) {
     showSearch.value = true
     await nextTick()
-    searchField.value?.focus?.()
+    // Принудительный фокус для открытия клавиатуры
+    searchField.value?.$el?.querySelector('input')?.focus()
     return
   }
-  await mockSearchById()
+  await searchById()
 }
 </script>
 
@@ -81,15 +99,15 @@ const onFindClick = async () => {
                       placeholder="Введите номер реестра"
                       class="search-input mb-4"
                       :disabled="loading"
-                      @keyup.enter="mockSearchById"
+                      @keyup.enter="searchById"
                     />
                     <div v-if="!loading" class="search-append-external mb-4 glossy"
                       :class="{ 'search-append-external--disabled': !isReady() }"
                       role="button"
                       :aria-label="'Найти реестр'"
                       tabindex="0"
-                      @click.stop="isReady() && mockSearchById()"
-                      @keyup.enter.stop="isReady() && mockSearchById()"
+                      @click.stop="isReady() && searchById()"
+                      @keyup.enter.stop="isReady() && searchById()"
                     >
                       <v-icon size="22" :color="isReady() ? 'white' : 'grey'">mdi-magnify</v-icon>
                     </div>
@@ -98,6 +116,19 @@ const onFindClick = async () => {
                     </div>
                   </div>
                 </v-expand-x-transition>
+
+                <!-- Ошибка под полем поиска -->
+                <v-expand-transition>
+                  <v-alert
+                    v-if="error"
+                    :type="errorType"
+                    variant="tonal"
+                    density="compact"
+                    class="mb-4 glossy rounded-base-md"
+                  >
+                    {{ error }}
+                  </v-alert>
+                </v-expand-transition>
 
                 <div v-if="!showSearch" v-motion :initial="{ opacity: 0 }" :enter="{ opacity: 1, transition: { duration: 300 } }">
                   <v-btn block color="primary" size="large" prepend-icon="mdi-file-search" class="mb-4 glossy"
