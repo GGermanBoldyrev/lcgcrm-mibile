@@ -18,15 +18,8 @@ const model = computed({
 </script>
 
 <template>
-  <v-text-field
-    v-model="model"
-    hide-details="auto"
-    variant="solo"
-    color="primary"
-    density="comfortable"
-    class="custom-input glossy-input"
-    v-bind="{ ...$attrs }"
-  >
+  <v-text-field v-model="model" hide-details="auto" variant="solo" color="primary" density="comfortable"
+    class="custom-input glossy-input" v-bind="{ ...$attrs }">
     <template #prepend-inner>
       <slot name="prepend-inner" />
     </template>
