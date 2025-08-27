@@ -1,8 +1,10 @@
-import { ref, nextTick, computed } from 'vue'
+import { ref, nextTick, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { useHubSearch } from './useHubSearch'
 import { useQrScannerUI } from './useQrScannerUI'
 
 export function useHubUI() {
+  const route = useRoute()
   const showSearch = ref(false)
   const searchField = ref()
   const searchId = ref('')
@@ -137,6 +139,16 @@ export function useHubUI() {
 
   const getStatusColor = (style: string) =>
     statusColorMap[style] || 'grey'
+
+  // Проверяем query параметр при монтировании
+  onMounted(() => {
+    if (route.query.openQR === 'true') {
+      // Небольшая задержка для того чтобы компоненты успели инициализироваться
+      setTimeout(() => {
+        onQrScanClick()
+      }, 300)
+    }
+  })
 
   return {
     // Состояние

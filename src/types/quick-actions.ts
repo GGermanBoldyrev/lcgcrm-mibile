@@ -3,6 +3,7 @@ export interface QuickActionSecondary {
   label?: string
   color?: string
   to?: object | string
+  onClick?: () => void | Promise<void>
 }
 
 export interface QuickAction {

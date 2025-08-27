@@ -29,9 +29,17 @@ const goToPrimary = () => {
   router.push(props.action.to as any)
 }
 
-const goToSecondary = () => {
-  if (!props.action.secondaryCard?.to) return
-  router.push(props.action.secondaryCard.to as any)
+const goToSecondary = async () => {
+  // Приоритет у onClick
+  if (props.action.secondaryCard?.onClick) {
+    await props.action.secondaryCard.onClick()
+    return
+  }
+
+  // Если нет onClick, используем to
+  if (props.action.secondaryCard?.to) {
+    router.push(props.action.secondaryCard.to as any)
+  }
 }
 </script>
 

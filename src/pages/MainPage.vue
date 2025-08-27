@@ -1,7 +1,14 @@
 <script setup lang="ts">
-
+import { useRouter } from 'vue-router'
 import QuickActionCard from '@/components/common/QuickActionCard.vue'
 import type { QuickAction } from '@/types/quick-actions'
+
+const router = useRouter()
+
+const openQrScanner = async () => {
+  // Переходим на Hub страницу и открываем QR-сканер
+  await router.push({ name: 'hub', query: { openQR: 'true' } })
+}
 
 const quickActions: QuickAction[] = [
   {
@@ -10,7 +17,7 @@ const quickActions: QuickAction[] = [
     to: { name: 'hub' },
     secondaryCard: {
       icon: 'mdi-qrcode-scan',
-      to: { name: 'scanner' }
+      onClick: openQrScanner
     }
   },
 
