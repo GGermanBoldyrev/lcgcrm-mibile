@@ -128,15 +128,36 @@ const getStatusColor = (style: string) =>
               <v-divider class="mb-6" />
 
               <!-- DATA DISPLAY SECTION -->
-              <div v-if="documentData" class="result-display" v-motion-fade>
+              <div v-if="documentData" class="result-display" v-motion :initial="{
+                opacity: 0,
+                y: 20
+              }" :enter="{
+                opacity: 1,
+                y: 0,
+                transition: {
+                  duration: 500,
+                  delay: 200
+                }
+              }">
                 <div
-                  v-for="item in displayItems"
+                  v-for="(item, index) in displayItems"
                   :key="item.label"
-                  class="detail-item d-flex align-start mb-6"
+                  class="detail-item d-flex align-center mb-4"
+                  v-motion
+                  :initial="{
+                    opacity: 0,
+                    x: -20
+                  }"
+                  :enter="{
+                    opacity: 1,
+                    x: 0,
+                    transition: {
+                      duration: 400,
+                      delay: index * 50 + 300
+                    }
+                  }"
                 >
-                  <v-avatar size="40" class="mr-4">
-                    <v-icon :icon="item.icon" color="primary" size="24" />
-                  </v-avatar>
+                  <v-icon color="primary" class="mr-3" size="24">{{ item.icon }}</v-icon>
                   <div>
                     <p class="text-caption text-medium-emphasis mb-0">{{ item.label }}</p>
                     <div v-if="item.label === 'Текущий статус'">
@@ -144,15 +165,16 @@ const getStatusColor = (style: string) =>
                         :color="getStatusColor(documentData.status.style)"
                         variant="tonal"
                         size="small"
+                        class="mt-1"
                       >
                         {{ item.value }}
                       </v-chip>
                     </div>
-                    <p v-else class="text-wrap" v-html="item.value"></p>
+                    <p v-else class="text-body-1 font-weight-medium text-wrap">{{ item.value }}</p>
                   </div>
                 </div>
 
-                <v-divider class="my-2" />
+                <v-divider class="mb-6" />
 
                 <v-btn
                   block
@@ -160,9 +182,22 @@ const getStatusColor = (style: string) =>
                   color="secondary"
                   size="large"
                   prepend-icon="mdi-magnify"
-                  class="glossy mt-6"
+                  class="glossy"
                   style="border-radius: var(--radius-md);"
                   @click="handleReset"
+                  v-motion
+                  :initial="{
+                    opacity: 0,
+                    y: 10
+                  }"
+                  :enter="{
+                    opacity: 1,
+                    y: 0,
+                    transition: {
+                      duration: 400,
+                      delay: 600
+                    }
+                  }"
                 >
                   Искать снова
                 </v-btn>
@@ -171,8 +206,21 @@ const getStatusColor = (style: string) =>
               <!-- SEARCH UI -->
               <div v-else class="hub-actions">
                 <v-expand-x-transition>
-                  <div v-if="showSearch" class="search-row" v-motion :initial="{ opacity: 0, x: -20 }"
-                    :enter="{ opacity: 1, x: 0, transition: { duration: 350 } }">
+                  <div v-if="showSearch" class="search-row" v-motion :initial="{
+                    opacity: 0,
+                    x: -30,
+                    scale: 0.95
+                  }" :enter="{
+                    opacity: 1,
+                    x: 0,
+                    scale: 1,
+                    transition: {
+                      duration: 400,
+                      type: 'spring',
+                      stiffness: 200,
+                      damping: 25
+                    }
+                  }">
                     <BaseOutlinedTextField
                       ref="searchField"
                       v-model="searchId"
@@ -186,11 +234,37 @@ const getStatusColor = (style: string) =>
                       :aria-label="'Найти документ'" tabindex="0"
                       @click.stop="isReady() && searchById(searchId.trim())"
                       @keyup.enter.stop="isReady() && searchById(searchId.trim())"
+                      v-motion
+                      :initial="{
+                        opacity: 0,
+                        scale: 0.8
+                      }"
+                      :enter="{
+                        opacity: 1,
+                        scale: 1,
+                        transition: {
+                          duration: 300,
+                          delay: 150
+                        }
+                      }"
                     >
                       <v-icon size="22" :color="isReady() ? 'white' : 'grey'">mdi-magnify</v-icon>
                     </div>
                     <div v-else class="search-append-external mb-4 search-append-external--loading" aria-live="polite"
-                      aria-busy="true">
+                      aria-busy="true"
+                      v-motion
+                      :initial="{
+                        opacity: 0,
+                        scale: 0.8
+                      }"
+                      :enter="{
+                        opacity: 1,
+                        scale: 1,
+                        transition: {
+                          duration: 300
+                        }
+                      }"
+                    >
                       <v-progress-circular indeterminate size="22" width="3" color="white" />
                     </div>
                   </div>
@@ -198,14 +272,38 @@ const getStatusColor = (style: string) =>
 
                 <v-expand-transition>
                   <v-alert v-if="error" :type="errorType" variant="tonal" density="compact"
-                    class="mb-4 glossy rounded-base-md">
+                    class="mb-4 glossy rounded-base-md"
+                    v-motion
+                    :initial="{
+                      opacity: 0,
+                      y: -10
+                    }"
+                    :enter="{
+                      opacity: 1,
+                      y: 0,
+                      transition: {
+                        duration: 300
+                      }
+                    }"
+                  >
                     {{ error }}
                   </v-alert>
                 </v-expand-transition>
 
-                <div v-if="!showSearch" v-motion :initial="{ opacity: 0 }"
-                  :enter="{ opacity: 1, transition: { duration: 300 } }">
-                  <v-btn block color="primary" size="large" prepend-icon="mdi-file-search" class="mb-4 glossy"
+                <div v-if="!showSearch" v-motion :initial="{
+                  opacity: 0,
+                  y: 20
+                }" :enter="{
+                  opacity: 1,
+                  y: 0,
+                  transition: {
+                    duration: 400,
+                    type: 'spring',
+                    stiffness: 200,
+                    damping: 25
+                  }
+                }">
+                  <v-btn block color="primary" size="large" prepend-icon="mdi-file-search" class="mb-4 glossy search-btn"
                     style="border-radius: var(--radius-md);" :loading="loading" :disabled="loading"
                     @click="onFindClick"
                   >
@@ -214,8 +312,20 @@ const getStatusColor = (style: string) =>
                 </div>
 
                 <v-btn block variant="outlined" color="secondary" size="large" prepend-icon="mdi-qrcode-scan"
-                  class="glossy" style="border-radius: var(--radius-md);" v-motion :initial="{ opacity: 0 }"
-                  :enter="{ opacity: 1, transition: { duration: 400 } }">
+                  class="glossy qr-btn" style="border-radius: var(--radius-md);" v-motion :initial="{
+                    opacity: 0,
+                    y: 20
+                  }" :enter="{
+                    opacity: 1,
+                    y: 0,
+                    transition: {
+                      duration: 400,
+                      delay: 100,
+                      type: 'spring',
+                      stiffness: 200,
+                      damping: 25
+                    }
+                  }">
                   Сканировать QR
                 </v-btn>
               </div>
@@ -254,10 +364,8 @@ const getStatusColor = (style: string) =>
   padding: 0 16px;
   margin-left: 10px;
   margin-right: 0;
-  /* no right margin */
   border-radius: var(--radius-md);
   background: rgb(var(--v-theme-primary)) !important;
-  /* color fix over glossy */
   box-shadow: 0 8px 18px rgba(0, 0, 0, .16);
   display: inline-flex;
   align-items: center;
@@ -274,6 +382,7 @@ const getStatusColor = (style: string) =>
 
 .search-append-external:hover {
   transform: translateY(-1px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, .2);
 }
 
 .search-append-external:active {
@@ -300,17 +409,81 @@ const getStatusColor = (style: string) =>
   box-shadow: none;
 }
 
-/* Styles for the new data display section */
+/* Styles for the data display section - matching ProfilePage */
 .result-display {
-  max-width: 450px;
+  max-width: 400px;
 }
 
 .text-wrap {
   white-space: normal;
-  line-height: 1.4; /* Улучшает читаемость многострочного текста */
+  line-height: 1.5;
+  word-break: break-word;
 }
 
 .detail-item {
   width: 100%;
+  transition: all 0.2s ease;
+}
+
+.detail-item:hover {
+  background-color: rgba(var(--v-theme-primary), 0.02);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  margin: -8px -8px 8px -8px;
+}
+
+/* Consistent spacing and typography */
+.detail-item .v-icon {
+  margin-top: 2px;
+}
+
+.detail-item p {
+  margin-bottom: 0;
+}
+
+.detail-item .text-caption {
+  font-size: 0.75rem;
+  letter-spacing: 0.0333333333em;
+}
+
+.detail-item .text-body-1 {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Enhanced button interactions matching ProfilePage style */
+.search-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(var(--v-theme-primary), 0.3);
+}
+
+.qr-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(var(--v-theme-secondary), 0.2);
+}
+
+.search-btn:active,
+.qr-btn:active {
+  transform: translateY(0);
+}
+
+/* Chip improvements for status display */
+.v-chip {
+  font-weight: 500;
+  letter-spacing: 0.025em;
+}
+
+/* Smooth transitions for all interactive elements */
+.v-btn {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.v-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.v-btn:active:not(:disabled) {
+  transform: translateY(0);
+  transition-duration: 0.1s;
 }
 </style>
