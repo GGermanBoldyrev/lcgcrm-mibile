@@ -97,6 +97,24 @@ const model = computed({
   transition: 200ms;
 }
 
+/* Отключаем синий фон автозаполнения браузера */
+.glossy-input :deep(input:-webkit-autofill),
+.glossy-input :deep(input:-webkit-autofill:hover),
+.glossy-input :deep(input:-webkit-autofill:focus),
+.glossy-input :deep(input:-webkit-autofill:active) {
+  -webkit-box-shadow: 0 0 0 30px transparent inset !important;
+  -webkit-text-fill-color: inherit !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
+/* Для Mozilla Firefox */
+.glossy-input :deep(input:-moz-autofill) {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
 /* Fallback для браузеров без backdrop-filter */
 @supports not (backdrop-filter: blur(1px)) {
   .glossy-input :deep(.v-field) {

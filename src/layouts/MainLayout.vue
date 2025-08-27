@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import BottomNavigation from '@/components/layout/BottomNavigation.vue'
 import TopAppBar from '@/components/layout/TopAppBar.vue'
 </script>
 
@@ -11,7 +10,6 @@ import TopAppBar from '@/components/layout/TopAppBar.vue'
       <slot />
     </v-main>
 
-    <BottomNavigation />
   </v-app>
 </template>
 
