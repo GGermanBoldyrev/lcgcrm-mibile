@@ -2,10 +2,12 @@
 import { ref, nextTick, computed } from 'vue'
 import BaseOutlinedTextField from '@/components/base/BaseOutlinedTextField.vue'
 import { useHubSearch } from '@/composables/hub/useHubSearch'
+import { useQrScanner } from '@/composables/hub/useQrScanner'
 
 const showSearch = ref(false)
 const showQrScanner = ref(false)
 const searchField = ref()
+const videoElement = ref<HTMLVideoElement>()
 
 const {
   data: documentData,
@@ -15,6 +17,16 @@ const {
   searchById,
   resetSearch,
 } = useHubSearch()
+
+const {
+  isScanning,
+  isLoading: qrLoading,
+  error: qrError,
+  hasPermission,
+  startContinuousScanning,
+  stopScanning,
+  requestCameraPermission
+} = useQrScanner()
 
 const searchId = ref('')
 
@@ -40,42 +52,54 @@ const handleReset = () => {
 }
 
 // QR Scanner functions
-const onQrScanClick = () => {
+const onQrScanClick = async () => {
   if (showSearch.value) {
     showSearch.value = false
   }
+
   showQrScanner.value = true
 
-  // TODO: Заменить на реальное QR-сканирование
-  // Для интеграции с реальным QR-сканером:
-  // 1. Подключить библиотеку, например: @zxing/browser или quagga2
-  // 2. Инициализировать камеру и stream
-  // 3. Заменить simulateQrScan() на реальную функцию сканирования
-  // 4. Обработать результат сканирования и вызвать searchById с полученным кодом
+  // Ждем следующий тик для рендеринга video элемента
+  await nextTick()
 
-  simulateQrScan() // Временная симуляция
+  if (videoElement.value) {
+    startRealQrScan()
+  }
 }
 
-// Симуляция сканирования QR-кода (для демонстрации)
-// TODO: Заменить на реальную функцию QR-сканирования
-const simulateQrScan = async () => {
+// Реальное QR-сканирование с камерой
+const startRealQrScan = async () => {
+  if (!videoElement.value) return
+
   try {
-    // Симулируем процесс сканирования (2 секунды)
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    // Запускаем непрерывное сканирование
+    await startContinuousScanning(
+      videoElement.value,
+      // Callback при успешном сканировании
+      async (scannedCode: string) => {
+        console.log('QR Code scanned:', scannedCode)
 
-        // Симулируем получение кода (в реальности это будет результат сканирования)
-    const scannedCode = "DOC123456" // Замените на реальный код из QR-сканера
+        // Останавливаем сканирование
+        stopScanning()
+        showQrScanner.value = false
 
-    // Выполняем поиск с полученным кодом
-    await searchById(scannedCode)
-
-    // Скрываем интерфейс сканера
-    showQrScanner.value = false
+        // Выполняем поиск с полученным кодом
+        await searchById(scannedCode)
+      },
+      // Callback при ошибке
+      (error: string) => {
+        console.error('QR scanning error:', error)
+      }
+    )
   } catch (error) {
-    console.error('QR scanning error:', error)
-    showQrScanner.value = false
-    // Здесь можно добавить обработку ошибок сканирования
+    console.error('Failed to start QR scanning:', error)
   }
+}
+
+// Остановка сканирования
+const stopQrScan = () => {
+  stopScanning()
+  showQrScanner.value = false
 }
 
 // Функция для повторного сканирования
@@ -276,7 +300,7 @@ const getStatusColor = (style: string) =>
                 </div>
               </div>
 
-              <!-- QR SCANNER UI -->
+                            <!-- QR SCANNER UI -->
               <div v-else-if="showQrScanner" class="qr-scanner-container" v-motion :initial="{
                 opacity: 0,
                 scale: 0.9,
@@ -293,7 +317,17 @@ const getStatusColor = (style: string) =>
                 }
               }">
                 <div class="qr-scanner-display">
-                  <div class="qr-scanner-frame">
+                  <!-- Video элемент для камеры -->
+                  <div class="qr-video-container">
+                    <video
+                      ref="videoElement"
+                      class="qr-video"
+                      autoplay
+                      muted
+                      playsinline
+                    ></video>
+
+                    <!-- Оверлей с рамкой сканирования -->
                     <div class="qr-scanner-overlay">
                       <div class="qr-scanner-corners">
                         <div class="corner top-left"></div>
@@ -301,17 +335,48 @@ const getStatusColor = (style: string) =>
                         <div class="corner bottom-left"></div>
                         <div class="corner bottom-right"></div>
                       </div>
-                      <div class="scanning-line"></div>
+                      <div class="scanning-line" v-if="isScanning"></div>
                     </div>
                   </div>
 
-                  <div class="qr-scanner-text mt-4">
-                    <v-icon size="32" color="primary" class="mb-2">mdi-qrcode-scan</v-icon>
-                    <h3 class="text-h6 mb-2">Сканирование QR-кода</h3>
-                    <p class="text-body-2 text-medium-emphasis">
-                      Наведите камеру на QR-код документа
-                    </p>
-                    <v-progress-linear indeterminate color="primary" class="mt-4"></v-progress-linear>
+                  <!-- Информация и кнопки управления -->
+                  <div class="qr-scanner-controls mt-4">
+                    <div v-if="qrLoading" class="text-center mb-4">
+                      <v-progress-circular indeterminate color="primary" size="32"></v-progress-circular>
+                      <p class="text-body-2 text-medium-emphasis mt-2">
+                        Инициализация камеры...
+                      </p>
+                    </div>
+
+                    <div v-else-if="isScanning" class="text-center mb-4">
+                      <v-icon size="32" color="success" class="mb-2">mdi-camera</v-icon>
+                      <h3 class="text-h6 mb-2">Сканирование активно</h3>
+                      <p class="text-body-2 text-medium-emphasis">
+                        Наведите камеру на QR-код документа
+                      </p>
+                    </div>
+
+                    <div v-else-if="qrError" class="text-center mb-4">
+                      <v-icon size="32" color="error" class="mb-2">mdi-camera-off</v-icon>
+                      <h3 class="text-h6 mb-2">Ошибка камеры</h3>
+                      <p class="text-body-2 text-medium-emphasis mb-3">
+                        {{ qrError }}
+                      </p>
+                    </div>
+
+                    <!-- Кнопка закрытия -->
+                    <v-btn
+                      block
+                      variant="outlined"
+                      color="secondary"
+                      size="large"
+                      prepend-icon="mdi-close"
+                      class="glossy"
+                      style="border-radius: var(--radius-md);"
+                      @click="stopQrScan"
+                    >
+                      Закрыть сканер
+                    </v-btn>
                   </div>
                 </div>
               </div>
@@ -617,23 +682,30 @@ const getStatusColor = (style: string) =>
   text-align: center;
 }
 
-.qr-scanner-frame {
+/* Video container for camera */
+.qr-video-container {
   position: relative;
-  width: 250px;
-  height: 250px;
+  width: 300px;
+  height: 300px;
   margin: 0 auto;
   border-radius: var(--radius-lg);
-  background: linear-gradient(45deg,
-    rgba(var(--v-theme-primary), 0.1) 0%,
-    rgba(var(--v-theme-primary), 0.05) 100%);
-  border: 2px solid rgba(var(--v-theme-primary), 0.3);
   overflow: hidden;
+  background: #000;
+  border: 2px solid rgba(var(--v-theme-primary), 0.3);
+}
+
+.qr-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .qr-scanner-overlay {
   position: absolute;
   inset: 20px;
   border-radius: var(--radius-md);
+  pointer-events: none;
 }
 
 .qr-scanner-corners {
@@ -707,6 +779,11 @@ const getStatusColor = (style: string) =>
   }
 }
 
+.qr-scanner-controls {
+  max-width: 300px;
+  margin: 0 auto;
+}
+
 .qr-scanner-text {
   animation: pulse-text 2s ease-in-out infinite;
 }
@@ -719,4 +796,17 @@ const getStatusColor = (style: string) =>
     opacity: 0.7;
   }
 }
+
+/* Responsive adjustments for mobile */
+@media (max-width: 480px) {
+  .qr-video-container {
+    width: 280px;
+    height: 280px;
+  }
+
+  .qr-scanner-container {
+    max-width: 320px;
+  }
+}
 </style>
+
