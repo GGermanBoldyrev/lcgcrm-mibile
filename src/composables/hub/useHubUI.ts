@@ -1,39 +1,171 @@
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, computed } from 'vue'
+import { useHubSearch } from './useHubSearch'
+import { useQrScannerUI } from './useQrScannerUI'
 
 export function useHubUI() {
   const showSearch = ref(false)
-  const showQrScanner = ref(false)
   const searchField = ref()
+  const searchId = ref('')
 
-  const openSearch = async () => {
-    showSearch.value = true
-    await nextTick()
-    searchField.value?.$el?.querySelector('input')?.focus()
+  const {
+    data: documentData,
+    loading,
+    error,
+    errorType,
+    searchById,
+    resetSearch,
+  } = useHubSearch()
+
+  const {
+    showQrScanner,
+    videoElement,
+    isScanning,
+    qrLoading,
+    qrError,
+    hasPermission,
+    openQrScanner,
+    closeQrScanner,
+    reopenQrScanner
+  } = useQrScannerUI()
+
+  const isReady = computed(() =>
+    searchId.value.trim().length > 0 && !loading.value
+  )
+
+  const onFindClick = async () => {
+    if (!showSearch.value) {
+      showSearch.value = true
+      await nextTick()
+      searchField.value?.$el?.querySelector('input')?.focus()
+      return
+    }
+    await searchById(searchId.value.trim())
   }
 
-  const openQrScanner = () => {
+  // Reset с дополнительным UX-фокусом
+  const handleReset = () => {
+    resetSearch()
+    searchId.value = ''
+    showSearch.value = false
+    closeQrScanner()
+  }
+
+  // QR Scanner functions
+  const onQrScanClick = async () => {
     if (showSearch.value) {
       showSearch.value = false
     }
-    showQrScanner.value = true
+
+    await openQrScanner(async (scannedCode: string) => {
+      // Выполняем поиск с полученным кодом
+      await searchById(scannedCode)
+    })
   }
 
-  const closeAll = () => {
-    showSearch.value = false
-    showQrScanner.value = false
+  // Остановка сканирования
+  const stopQrScan = () => {
+    closeQrScanner()
   }
 
-  const resetToInitial = () => {
-    closeAll()
+  // Функция для повторного сканирования
+  const handleScanAgain = () => {
+    resetSearch()
+    onQrScanClick()
   }
+
+  // Форматирование даты
+  const formattedDate = computed(() => {
+    if (!documentData.value?.meta?.createdAt) return ''
+    return new Date(documentData.value.meta.createdAt).toLocaleString('ru-RU', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  })
+
+  // Элементы для отображения
+  const displayItems = computed(() => {
+    if (!documentData.value) return []
+
+    return [
+      {
+        icon: 'mdi-list-status',
+        label: 'Текущий статус',
+        value: documentData.value.status?.name,
+      },
+      {
+        icon: 'mdi-calendar-clock',
+        label: 'Дата создания',
+        value: formattedDate.value,
+      },
+      {
+        icon: 'mdi-information-outline',
+        label: 'Наименование',
+        value: documentData.value.info?.name,
+      },
+      {
+        icon: 'mdi-comment-processing-outline',
+        label: 'Особые условия',
+        value: documentData.value.info?.comment,
+      },
+      {
+        icon: 'mdi-map-marker-outline',
+        label: 'Адрес доставки',
+        value: documentData.value.address?.address,
+      },
+      {
+        icon: 'mdi-comment-text-outline',
+        label: 'Комментарий',
+        value: documentData.value.address?.comment,
+      },
+      {
+        icon: 'mdi-phone-outline',
+        label: 'Контакты',
+        value: documentData.value.address?.contact,
+      },
+    ].filter(item => item.value)
+  })
+
+  const statusColorMap: Record<string, string> = {
+    primary: 'primary',
+    success: 'success',
+    warning: 'warning',
+    danger: 'error',
+  }
+
+  const getStatusColor = (style: string) =>
+    statusColorMap[style] || 'grey'
 
   return {
+    // Состояние
     showSearch,
-    showQrScanner,
     searchField,
-    openSearch,
-    openQrScanner,
-    closeAll,
-    resetToInitial
+    searchId,
+    showQrScanner,
+    videoElement,
+    documentData,
+    loading,
+    error,
+    errorType,
+    isScanning,
+    qrLoading,
+    qrError,
+    hasPermission,
+
+    // Computed
+    isReady,
+    displayItems,
+    formattedDate,
+
+    // Методы
+    onFindClick,
+    handleReset,
+    onQrScanClick,
+    stopQrScan,
+    handleScanAgain,
+    getStatusColor,
+    searchById
   }
 }

@@ -21,7 +21,6 @@ const {
   hasPermission,
   startContinuousScanning,
   stopScanning,
-  checkCameraAvailability,
   requestCameraPermission
 } = useQrScanner()
 
@@ -80,12 +79,6 @@ const toggleCamera = async () => {
 // Начинаем сканирование при показе компонента
 const initScanner = async () => {
   if (props.show) {
-    // Сначала проверяем наличие камер
-    const hasCamera = await checkCameraAvailability()
-    if (!hasCamera) {
-      return // Ошибка уже установлена в композабле
-    }
-
     await nextTick()
     if (videoElement.value) {
       startRealQrScan()
@@ -162,6 +155,13 @@ watch(() => props.show, (newVal) => {
 
       <!-- Информация и кнопки управления -->
       <div class="qr-scanner-controls mt-4">
+        <!-- Временная отладка -->
+        <div style="background: #f0f0f0; padding: 10px; margin-bottom: 10px; font-size: 12px;">
+          <div>qrLoading: {{ qrLoading }}</div>
+          <div>isScanning: {{ isScanning }}</div>
+          <div>qrError: {{ qrError }}</div>
+          <div>hasPermission: {{ hasPermission }}</div>
+        </div>
         <div v-if="qrLoading" class="text-center mb-4">
           <v-progress-circular indeterminate color="primary" size="32"></v-progress-circular>
           <p class="text-body-2 text-medium-emphasis mt-2">
@@ -178,6 +178,12 @@ watch(() => props.show, (newVal) => {
         </div>
 
         <div v-else-if="qrError" class="text-center mb-4">
+          <v-icon size="32" color="error" class="mb-2">mdi-camera-off</v-icon>
+          <h3 class="text-h6 mb-2">Ошибка камеры</h3>
+          <p class="text-body-2 text-medium-emphasis mb-3">
+            {{ qrError }}
+          </p>
+
           <!-- Кнопка повторной попытки -->
           <v-btn
             variant="outlined"
@@ -189,6 +195,15 @@ watch(() => props.show, (newVal) => {
           >
             Попробовать снова
           </v-btn>
+        </div>
+
+        <!-- Дефолтное состояние когда ничего не происходит -->
+        <div v-else class="text-center mb-4">
+          <v-icon size="32" color="primary" class="mb-2">mdi-qrcode-scan</v-icon>
+          <h3 class="text-h6 mb-2">Готов к сканированию</h3>
+          <p class="text-body-2 text-medium-emphasis">
+            Инициализация QR-сканера...
+          </p>
         </div>
 
         <!-- Кнопка переключения камеры -->
