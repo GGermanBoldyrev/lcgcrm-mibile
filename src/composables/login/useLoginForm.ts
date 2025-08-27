@@ -62,8 +62,8 @@ export function useLoginForm() {
   // Функция для проверки автозаполнения
   const checkAutofill = () => {
     nextTick(() => {
-      const loginInput = loginFieldRef.value?.$el?.querySelector('input[name="username"]')
-      const passwordInput = document.querySelector('input[name="current-password"]')
+      const loginInput = loginFieldRef.value?.$el?.querySelector('input[name="username"]') as HTMLInputElement
+      const passwordInput = document.querySelector('input[name="current-password"]') as HTMLInputElement
 
       if (loginInput?.value && !state.value.login) {
         state.value.login = loginInput.value
