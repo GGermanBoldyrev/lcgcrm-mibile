@@ -86,6 +86,62 @@ const formattedDate = computed(() => {
     minute: '2-digit'
   })
 })
+
+const displayItems = computed(() => {
+  if (!documentData.value) return []
+
+  const items = [
+    {
+      icon: 'mdi-list-status',
+      label: 'Текущий статус',
+      value: documentData.value.status?.name,
+    },
+    {
+      icon: 'mdi-calendar-clock',
+      label: 'Дата создания',
+      value: formattedDate.value,
+    },
+    {
+      icon: 'mdi-information-outline',
+      label: 'Наименование',
+      value: documentData.value.info?.name,
+    },
+    {
+      icon: 'mdi-comment-processing-outline',
+      label: 'Особые условия',
+      value: documentData.value.info?.comment,
+    },
+    {
+      icon: 'mdi-map-marker-outline',
+      label: 'Адрес доставки',
+      value: documentData.value.address?.address,
+    },
+    {
+      icon: 'mdi-comment-text-outline',
+      label: 'Комментарий',
+      value: documentData.value.address?.comment,
+    },
+    {
+      icon: 'mdi-phone-outline',
+      label: 'Контакты',
+      value: documentData.value.address?.contact,
+    },
+  ]
+
+  return items.filter(item => item.value)
+})
+
+const statusColorMap: { [key: string]: string } = {
+  primary: 'primary',
+  success: 'success',
+  warning: 'warning',
+  danger: 'error',
+}
+
+const getStatusColor = (style: string) => {
+  return statusColorMap[style] || 'grey';
+}
+
 </script>
 
 <template>
@@ -115,57 +171,50 @@ const formattedDate = computed(() => {
 
               <!-- DATA DISPLAY SECTION -->
               <div v-if="documentData" class="result-display" v-motion-fade>
-                <v-list lines="8" class="bg-transparent">
-                  <v-list-item>
-                    <template #prepend><v-icon color="primary">mdi-list-status</v-icon></template>
-                    <v-list-item-title>Текущий статус</v-list-item-title>
-                    <v-list-item-subtitle>{{ documentData.status.name }}</v-list-item-subtitle>
-                  </v-list-item>
+                  <!-- Перебираем подготовленные данные -->
+                  <div
+                      v-for="item in displayItems"
+                      :key="item.label"
+                      class="detail-item d-flex align-start mb-6"
+                  >
+                      <!-- Иконка в кружке -->
+                      <v-avatar size="40" class="mr-4">
+                          <v-icon :icon="item.icon" color="primary" size="24" />
+                      </v-avatar>
 
-                  <v-list-item>
-                    <template #prepend><v-icon color="primary">mdi-calendar-clock</v-icon></template>
-                    <v-list-item-title>Дата создания</v-list-item-title>
-                    <v-list-item-subtitle>{{ formattedDate }}</v-list-item-subtitle>
-                  </v-list-item>
+                      <!-- Текстовый блок -->
+                      <div>
+                          <p class="text-caption text-medium-emphasis mb-0">{{ item.label }}</p>
 
-                  <v-list-item>
-                    <template #prepend><v-icon color="primary">mdi-information-outline</v-icon></template>
-                    <v-list-item-title>Наименование</v-list-item-title>
-                    <v-list-item-subtitle class="text-wrap">{{ documentData.info.name }}</v-list-item-subtitle>
-                  </v-list-item>
+                          <div v-if="item.label === 'Текущий статус'">
+                              <v-chip
+                                  :color="getStatusColor(documentData.status.style)"
+                                  variant="tonal"
+                                  size="small"
+                              >
+                                  {{ item.value }}
+                              </v-chip>
+                          </div>
 
-                  <v-list-item>
-                    <template #prepend><v-icon color="primary">mdi-comment-processing-outline</v-icon></template>
-                    <v-list-item-title>Особые условия</v-list-item-title>
-                    <v-list-item-subtitle class="text-wrap">{{ documentData.info.comment }}</v-list-item-subtitle>
-                  </v-list-item>
+                          <!-- Для всех остальных полей... -->
+                          <p v-else class="text-wrap" v-html="item.value"></p>
+                      </div>
+                  </div>
 
-                  <v-list-item>
-                    <template #prepend><v-icon color="primary">mdi-map-marker-outline</v-icon></template>
-                    <v-list-item-title>Адрес доставки</v-list-item-title>
-                    <v-list-item-subtitle class="text-wrap">{{ documentData.address.address }}</v-list-item-subtitle>
-                  </v-list-item>
+                  <v-divider class="my-2" />
 
-                  <v-list-item>
-                    <template #prepend><v-icon color="primary">mdi-comment-text-outline</v-icon></template>
-                    <v-list-item-title>Комментарий</v-list-item-title>
-                    <v-list-item-subtitle class="text-wrap">{{ documentData.address.comment }}</v-list-item-subtitle>
-                  </v-list-item>
-
-                  <v-list-item>
-                    <template #prepend><v-icon color="primary">mdi-phone-outline</v-icon></template>
-                    <v-list-item-title>Контакты</v-list-item-title>
-                    <v-list-item-subtitle class="text-wrap">{{ documentData.address.contact }}</v-list-item-subtitle>
-                  </v-list-item>
-
-                </v-list>
-
-                <v-divider class="my-4" />
-
-                <v-btn block variant="outlined" color="secondary" size="large" prepend-icon="mdi-magnify" class="glossy"
-                  style="border-radius: var(--radius-md);" @click="resetSearch">
-                  Искать снова
-                </v-btn>
+                  <v-btn
+                      block
+                      variant="outlined"
+                      color="secondary"
+                      size="large"
+                      prepend-icon="mdi-magnify"
+                      class="glossy mt-6"
+                      style="border-radius: var(--radius-md);"
+                      @click="resetSearch"
+                  >
+                      Искать снова
+                  </v-btn>
               </div>
 
               <!-- SEARCH UI -->
@@ -299,5 +348,10 @@ const formattedDate = computed(() => {
 
 .text-wrap {
   white-space: normal;
+  line-height: 1.4; /* Улучшает читаемость многострочного текста */
+}
+
+.detail-item {
+  width: 100%;
 }
 </style>
