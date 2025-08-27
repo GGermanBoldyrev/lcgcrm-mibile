@@ -12,6 +12,7 @@ const emit = defineEmits<{
 }>()
 
 const videoElement = ref<HTMLVideoElement>()
+const useBackCamera = ref(true) // По умолчанию задняя камера
 
 const {
   isScanning,
@@ -20,6 +21,7 @@ const {
   hasPermission,
   startContinuousScanning,
   stopScanning,
+  checkCameraAvailability,
   requestCameraPermission
 } = useQrScanner()
 
@@ -28,7 +30,7 @@ const startRealQrScan = async () => {
   if (!videoElement.value) return
 
   try {
-    // Запускаем непрерывное сканирование
+    // Запускаем непрерывное сканирование с выбором камеры
     await startContinuousScanning(
       videoElement.value,
       // Callback при успешном сканировании
@@ -41,7 +43,9 @@ const startRealQrScan = async () => {
       // Callback при ошибке
       (error: string) => {
         console.error('QR scanning error:', error)
-      }
+      },
+      // Передаем предпочтение камеры
+      useBackCamera.value ? 'environment' : 'user'
     )
   } catch (error) {
     console.error('Failed to start QR scanning:', error)
@@ -62,10 +66,13 @@ const retryCamera = async () => {
   }
 }
 
-// Запрос разрешений на камеру
-const requestPermission = async () => {
-  await requestCameraPermission()
-  if (hasPermission.value && videoElement.value) {
+// Переключение камеры
+const toggleCamera = async () => {
+  useBackCamera.value = !useBackCamera.value
+  // Перезапускаем сканирование с новой камерой
+  stopScanning()
+  await nextTick()
+  if (videoElement.value) {
     startRealQrScan()
   }
 }
@@ -73,6 +80,12 @@ const requestPermission = async () => {
 // Начинаем сканирование при показе компонента
 const initScanner = async () => {
   if (props.show) {
+    // Сначала проверяем наличие камер
+    const hasCamera = await checkCameraAvailability()
+    if (!hasCamera) {
+      return // Ошибка уже установлена в композабле
+    }
+
     await nextTick()
     if (videoElement.value) {
       startRealQrScan()
@@ -114,8 +127,8 @@ watch(() => props.show, (newVal) => {
     }"
   >
     <div class="qr-scanner-display">
-      <!-- Video элемент для камеры -->
-      <div class="qr-video-container">
+      <!-- Video элемент для камеры (показываем только если нет ошибки) -->
+      <div v-if="!qrError" class="qr-video-container">
         <video
           ref="videoElement"
           class="qr-video"
@@ -133,6 +146,17 @@ watch(() => props.show, (newVal) => {
             <div class="corner bottom-right"></div>
           </div>
           <div class="scanning-line" v-if="isScanning"></div>
+        </div>
+      </div>
+
+      <!-- Заглушка при ошибке камеры -->
+      <div v-else class="qr-error-container">
+        <div class="qr-error-placeholder">
+          <v-icon size="80" color="error" class="mb-4">mdi-camera-off</v-icon>
+          <h3 class="text-h6 mb-2 text-center">Камера недоступна</h3>
+          <p class="text-body-2 text-medium-emphasis text-center">
+            {{ qrError }}
+          </p>
         </div>
       </div>
 
@@ -154,12 +178,6 @@ watch(() => props.show, (newVal) => {
         </div>
 
         <div v-else-if="qrError" class="text-center mb-4">
-          <v-icon size="32" color="error" class="mb-2">mdi-camera-off</v-icon>
-          <h3 class="text-h6 mb-2">Ошибка камеры</h3>
-          <p class="text-body-2 text-medium-emphasis mb-3">
-            {{ qrError }}
-          </p>
-
           <!-- Кнопка повторной попытки -->
           <v-btn
             variant="outlined"
@@ -173,25 +191,20 @@ watch(() => props.show, (newVal) => {
           </v-btn>
         </div>
 
-        <div v-else-if="!hasPermission && !qrLoading" class="text-center mb-4">
-          <v-icon size="32" color="warning" class="mb-2">mdi-camera-off</v-icon>
-          <h3 class="text-h6 mb-2">Нет доступа к камере</h3>
-          <p class="text-body-2 text-medium-emphasis mb-3">
-            Для сканирования QR-кодов необходимо разрешить доступ к камере
-          </p>
-
-          <!-- Кнопка запроса разрешений -->
-          <v-btn
-            variant="outlined"
-            color="primary"
-            size="small"
-            prepend-icon="mdi-camera"
-            class="mb-3"
-            @click="requestPermission"
-          >
-            Разрешить доступ
-          </v-btn>
-        </div>
+        <!-- Кнопка переключения камеры -->
+        <v-btn
+          v-if="isScanning || qrError"
+          block
+          variant="outlined"
+          color="primary"
+          size="large"
+          :prepend-icon="useBackCamera ? 'mdi-camera-front' : 'mdi-camera-rear'"
+          class="glossy mb-3"
+          style="border-radius: var(--radius-md);"
+          @click="toggleCamera"
+        >
+          {{ useBackCamera ? 'Переключить на переднюю' : 'Переключить на заднюю' }}
+        </v-btn>
 
         <!-- Кнопка закрытия -->
         <v-btn
@@ -336,15 +349,40 @@ watch(() => props.show, (newVal) => {
   }
 }
 
+/* Error container styles */
+.qr-error-container {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  margin: 0 auto;
+  border-radius: var(--radius-lg);
+  background: rgba(var(--v-theme-error), 0.05);
+  border: 2px solid rgba(var(--v-theme-error), 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-error-placeholder {
+  text-align: center;
+  padding: 20px;
+  max-width: 260px;
+}
+
 /* Responsive adjustments for mobile */
 @media (max-width: 480px) {
-  .qr-video-container {
+  .qr-video-container,
+  .qr-error-container {
     width: 280px;
     height: 280px;
   }
 
   .qr-scanner-container {
     max-width: 320px;
+  }
+
+  .qr-error-placeholder {
+    max-width: 240px;
   }
 }
 </style>
