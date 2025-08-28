@@ -10,9 +10,11 @@ export function useQrScannerUI() {
     isLoading: qrLoading,
     error: qrError,
     hasPermission,
+    currentFacingMode,
     startContinuousScanning,
     stopScanning,
-    requestCameraPermission
+    requestCameraPermission,
+    toggleCamera
   } = useQrScanner()
 
   // QR Scanner functions
@@ -69,6 +71,21 @@ export function useQrScannerUI() {
     openQrScanner()
   }
 
+  // Переключение камеры с перезапуском сканирования
+  const switchCamera = async (onScanned?: (code: string) => Promise<void>) => {
+    // Останавливаем текущее сканирование
+    stopScanning()
+
+    // Переключаем камеру
+    toggleCamera()
+
+    // Перезапускаем сканирование если видео элемент доступен
+    if (videoElement.value && showQrScanner.value) {
+      await nextTick() // Ждем обновления реактивного состояния
+      startRealQrScan(onScanned)
+    }
+  }
+
   return {
     // Состояние
     showQrScanner,
@@ -77,11 +94,13 @@ export function useQrScannerUI() {
     qrLoading,
     qrError,
     hasPermission,
+    currentFacingMode,
 
     // Методы
     openQrScanner,
     closeQrScanner,
     reopenQrScanner,
-    startRealQrScan
+    startRealQrScan,
+    switchCamera
   }
 }

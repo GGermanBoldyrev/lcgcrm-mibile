@@ -17,6 +17,7 @@ const {
   qrLoading,
   qrError,
   hasPermission,
+  currentFacingMode,
 
   // Computed
   isReady,
@@ -28,6 +29,7 @@ const {
   onQrScanClick,
   stopQrScan,
   handleScanAgain,
+  handleSwitchCamera,
   getStatusColor,
   searchById
 } = useHubUI()
@@ -224,6 +226,23 @@ const {
                         {{ qrError }}
                       </p>
                     </div>
+
+                    <!-- Кнопка переключения камеры -->
+                    <v-btn
+                      v-if="isScanning"
+                      block
+                      variant="tonal"
+                      color="primary"
+                      size="large"
+                      class="glossy mb-3"
+                      style="border-radius: var(--radius-md);"
+                      @click="handleSwitchCamera"
+                    >
+                      <v-icon class="mr-2">
+                        {{ currentFacingMode === 'environment' ? 'mdi-camera-front' : 'mdi-camera-rear' }}
+                      </v-icon>
+                      {{ currentFacingMode === 'environment' ? 'Фронтальная' : 'Задняя' }} камера
+                    </v-btn>
 
                     <!-- Кнопка закрытия -->
                     <v-btn

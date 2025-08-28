@@ -6,6 +6,7 @@ export function useQrScanner() {
   const isLoading = ref(false)
   const error = ref('')
   const hasPermission = ref(false)
+  const currentFacingMode = ref<'user' | 'environment'>('environment') // Задняя камера по умолчанию
 
   let codeReader: BrowserQRCodeReader | null = null
   let currentStream: MediaStream | null = null
@@ -121,13 +122,20 @@ export function useQrScanner() {
     }
   }
 
+  // Переключение камеры
+  const toggleCamera = () => {
+    currentFacingMode.value = currentFacingMode.value === 'environment' ? 'user' : 'environment'
+  }
+
   // Непрерывное сканирование
   const startContinuousScanning = async (
     videoElement: HTMLVideoElement,
     onResult: (text: string) => void,
     onError?: (error: string) => void,
-    facingMode: 'user' | 'environment' = 'environment'
+    facingMode?: 'user' | 'environment'
   ): Promise<void> => {
+    // Используем переданный facingMode или текущий
+    const useFacingMode = facingMode || currentFacingMode.value
     if (!codeReader) {
       const initialized = await initScanner()
       if (!initialized) return
@@ -152,7 +160,7 @@ export function useQrScanner() {
 
       // Выбираем камеру в зависимости от facingMode
       let selectedDevice
-      if (facingMode === 'environment') {
+      if (useFacingMode === 'environment') {
         // Ищем заднюю камеру
         selectedDevice = videoInputDevices.find((device: any) =>
           device.label.toLowerCase().includes('back') ||
@@ -220,10 +228,12 @@ export function useQrScanner() {
     isLoading,
     error,
     hasPermission,
+    currentFacingMode,
     initScanner,
     requestCameraPermission,
     startScanning,
     startContinuousScanning,
-    stopScanning
+    stopScanning,
+    toggleCamera
   }
 }

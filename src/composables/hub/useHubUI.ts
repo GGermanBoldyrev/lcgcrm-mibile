@@ -25,9 +25,12 @@ export function useHubUI() {
     qrLoading,
     qrError,
     hasPermission,
+    currentFacingMode,
     openQrScanner,
     closeQrScanner,
-    reopenQrScanner
+    reopenQrScanner,
+    startRealQrScan,
+    switchCamera
   } = useQrScannerUI()
 
   const isReady = computed(() =>
@@ -73,6 +76,13 @@ export function useHubUI() {
   const handleScanAgain = () => {
     resetSearch()
     onQrScanClick()
+  }
+
+  // Переключение камеры
+  const handleSwitchCamera = async () => {
+    await switchCamera(async (scannedCode: string) => {
+      await searchById(scannedCode)
+    })
   }
 
   // Форматирование даты
@@ -165,6 +175,7 @@ export function useHubUI() {
     qrLoading,
     qrError,
     hasPermission,
+    currentFacingMode,
 
     // Computed
     isReady,
@@ -177,6 +188,7 @@ export function useHubUI() {
     onQrScanClick,
     stopQrScan,
     handleScanAgain,
+    handleSwitchCamera,
     getStatusColor,
     searchById
   }
