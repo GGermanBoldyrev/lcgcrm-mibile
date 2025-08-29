@@ -14,8 +14,10 @@ export function useHubUI() {
     loading,
     error,
     errorType,
+    statusChanging,
     searchById,
     resetSearch,
+    updateStatus,
   } = useHubSearch()
 
   const {
@@ -176,6 +178,7 @@ export function useHubUI() {
     qrError,
     hasPermission,
     currentFacingMode,
+    statusChanging,
 
     // Computed
     isReady,
@@ -190,6 +193,7 @@ export function useHubUI() {
     handleScanAgain,
     handleSwitchCamera,
     getStatusColor,
-    searchById
+    searchById,
+    updateStatus
   }
 }

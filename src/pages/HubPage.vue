@@ -18,6 +18,7 @@ const {
   qrError,
   hasPermission,
   currentFacingMode,
+  statusChanging,
 
   // Computed
   isReady,
@@ -31,8 +32,15 @@ const {
   handleScanAgain,
   handleSwitchCamera,
   getStatusColor,
-  searchById
+  searchById,
+  updateStatus
 } = useHubUI()
+
+// Обработчик изменения статуса
+const handleNextStatus = async () => {
+  if (!documentData.value?.status?.nextStatus) return
+  await updateStatus(documentData.value.status.nextStatus.id)
+}
 </script>
 
 <template>
@@ -104,6 +112,36 @@ const {
                     </div>
                     <p v-else class="text-body-1 font-weight-medium text-wrap">{{ item.value }}</p>
                   </div>
+                </div>
+
+                <!-- Кнопка изменения статуса -->
+                <div v-if="documentData?.status?.nextStatus" class="next-status-section mb-6">
+                  <v-btn
+                    block
+                    color="success"
+                    size="large"
+                    prepend-icon="mdi-arrow-right"
+                    class="glossy next-status-btn"
+                    style="border-radius: var(--radius-md);"
+                    :loading="statusChanging"
+                    :disabled="statusChanging"
+                    @click="handleNextStatus"
+                    v-motion
+                    :initial="{
+                      opacity: 0,
+                      y: 10
+                    }"
+                    :enter="{
+                      opacity: 1,
+                      y: 0,
+                      transition: {
+                        duration: 400,
+                        delay: 800
+                      }
+                    }"
+                  >
+                    {{ documentData.status.nextStatus.name }}
+                  </v-btn>
                 </div>
 
                 <v-divider class="mb-6" />
@@ -550,6 +588,20 @@ const {
 .v-btn:active:not(:disabled) {
   transform: translateY(0);
   transition-duration: 0.1s;
+}
+
+/* Next Status Button Styles */
+.next-status-section {
+  max-width: 400px;
+}
+
+.next-status-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(var(--v-theme-success), 0.3);
+}
+
+.next-status-btn:active {
+  transform: translateY(0);
 }
 
 /* QR Scanner Styles */

@@ -3,6 +3,7 @@ export interface DocumentStatus {
   name: string;
   presentation: string;
   style: 'primary' | 'success' | 'warning' | 'danger'; // Используем литеральные типы для стилей
+  nextStatus?: DocumentStatus | null; // Следующий статус, если есть
 }
 
 export interface DocumentInfo {

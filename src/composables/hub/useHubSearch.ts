@@ -8,6 +8,7 @@ interface SearchState {
   loading: boolean;
   error: string;
   errorType: 'error' | 'warning';
+  statusChanging: boolean;
 }
 
 export function useHubSearch() {
@@ -17,6 +18,7 @@ export function useHubSearch() {
     loading: false,
     error: '',
     errorType: 'error',
+    statusChanging: false,
   });
 
   const searchById = async (code: string) => {
@@ -54,10 +56,46 @@ export function useHubSearch() {
     state.error = '';
   };
 
+  // Функция изменения статуса документа
+  const updateStatus = async (statusId: string) => {
+    if (!state.data?.status?.nextStatus || state.statusChanging) return;
+
+    state.statusChanging = true;
+
+    try {
+      // Пока моковый запрос - имитируем API вызов
+      console.log(`Изменение статуса документа ${state.data.rosterNum} на ${statusId}`);
+
+      // Имитация задержки API
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Обновляем статус документа локально
+      if (state.data) {
+        state.data.status = state.data.status.nextStatus!;
+      }
+
+      console.log('Статус успешно изменен');
+
+      // В будущем здесь будет реальный API вызов:
+      // await api.post('/mobile/document/status', {
+      //   documentId: state.data.rosterNum,
+      //   statusId
+      // });
+
+    } catch (error) {
+      console.error('Ошибка при изменении статуса:', error);
+      state.error = 'Ошибка при изменении статуса';
+      state.errorType = 'error';
+    } finally {
+      state.statusChanging = false;
+    }
+  };
+
   // Возвращаем состояние (через toRefs) и методы
   return {
     ...toRefs(state),
     searchById,
     resetSearch,
+    updateStatus,
   };
 }
