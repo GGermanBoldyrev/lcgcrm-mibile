@@ -16,6 +16,7 @@ export function useHubUI() {
     errorType,
     statusChanging,
     searchById,
+    searchByBarcode,
     resetSearch,
     updateStatus,
   } = useHubSearch()
@@ -64,8 +65,8 @@ export function useHubUI() {
     }
 
     await openQrScanner(async (scannedCode: string) => {
-      // Выполняем поиск с полученным кодом
-      await searchById(scannedCode)
+      // Выполняем поиск по barcode endpoint
+      await searchByBarcode(scannedCode)
     })
   }
 
@@ -83,7 +84,7 @@ export function useHubUI() {
   // Переключение камеры
   const handleSwitchCamera = async () => {
     await switchCamera(async (scannedCode: string) => {
-      await searchById(scannedCode)
+      await searchByBarcode(scannedCode)
     })
   }
 

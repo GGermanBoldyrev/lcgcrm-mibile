@@ -21,7 +21,8 @@ export function useHubSearch() {
     statusChanging: false,
   });
 
-  const searchById = async (code: string) => {
+  // Функция для поиска документа по коду (универсальная)
+  const searchDocument = async (code: string, endpoint: string) => {
     if (!code) return;
 
     state.loading = true;
@@ -30,7 +31,7 @@ export function useHubSearch() {
 
     try {
       // Ожидаем, что сам `response.data` будет типа DocumentData
-      const response = await api.post<DocumentData>('/mobile/hub/document/manual/info', { code });
+      const response = await api.post<DocumentData>(endpoint, { code });
       // Присваиваем данные напрямую из response.data
       state.data = response.data;
     } catch (e: any) {
@@ -49,6 +50,16 @@ export function useHubSearch() {
     } finally {
       state.loading = false;
     }
+  };
+
+  // Ручной поиск документа по ID
+  const searchById = async (code: string) => {
+    await searchDocument(code, '/mobile/hub/document/manual/info');
+  };
+
+  // Поиск документа по QR-коду (barcode)
+  const searchByBarcode = async (code: string) => {
+    await searchDocument(code, '/mobile/hub/document/barcode/info');
   };
 
   const resetSearch = () => {
@@ -95,6 +106,7 @@ export function useHubSearch() {
   return {
     ...toRefs(state),
     searchById,
+    searchByBarcode,
     resetSearch,
     updateStatus,
   };
