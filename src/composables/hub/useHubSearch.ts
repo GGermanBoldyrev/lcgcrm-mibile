@@ -30,7 +30,7 @@ export function useHubSearch() {
 
     try {
       // Ожидаем, что сам `response.data` будет типа DocumentData
-      const response = await api.post<DocumentData>('/mobile/barcode/info', { code });
+      const response = await api.post<DocumentData>('/mobile/hub/document/manual/info', { code });
       // Присваиваем данные напрямую из response.data
       state.data = response.data;
     } catch (e: any) {
