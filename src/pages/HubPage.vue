@@ -96,9 +96,24 @@ const handleConfirmStatusChange = async () => {
                 }">
                   <div class="d-flex align-center mb-2">
                     <v-icon color="primary" class="mr-3" size="24">mdi-identifier</v-icon>
-                    <div>
-                      <p class="text-caption text-medium-emphasis mb-0 user-select-none">Номер документа</p>
-                      <p class="text-h6 font-weight-bold text-primary mb-0 user-select-none">{{ documentData.documentId }}</p>
+                    <div class="flex-grow-1">
+                      <div class="d-flex align-center justify-space-between">
+                        <div>
+                          <p class="text-caption text-medium-emphasis mb-0 user-select-none">Номер документа</p>
+                          <p class="text-h6 font-weight-bold text-primary mb-0 user-select-none">{{ documentData.documentId }}</p>
+                        </div>
+                        <!-- Индикатор срочности -->
+                        <v-chip
+                          v-if="documentData.meta?.express"
+                          color="error"
+                          variant="tonal"
+                          size="small"
+                          class="ml-2"
+                        >
+                          <v-icon size="16" class="mr-1">mdi-clock-fast</v-icon>
+                          Срочно
+                        </v-chip>
+                      </div>
                     </div>
                   </div>
                   <v-divider class="my-4"></v-divider>

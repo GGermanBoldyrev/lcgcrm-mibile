@@ -108,43 +108,54 @@ export function useHubUI() {
   const displayItems = computed(() => {
     if (!documentData.value) return []
 
-    return [
+    const items: Array<{
+      icon: string
+      label: string
+      value: string | null
+    }> = [
       {
         icon: 'mdi-list-status',
         label: 'Текущий статус',
-        value: documentData.value.status?.name,
+        value: documentData.value.status?.name || null,
       },
       {
         icon: 'mdi-calendar-clock',
         label: 'Дата создания',
         value: formattedDate.value,
       },
+    ]
+
+
+
+    items.push(
       {
         icon: 'mdi-information-outline',
         label: 'Наименование',
-        value: documentData.value.info?.name,
+        value: documentData.value.info?.name || null,
       },
       {
         icon: 'mdi-comment-processing-outline',
         label: 'Особые условия',
-        value: documentData.value.info?.comment,
+        value: documentData.value.info?.comment || null,
       },
       {
         icon: 'mdi-map-marker-outline',
         label: 'Адрес доставки',
-        value: documentData.value.address?.address,
+        value: documentData.value.address?.address || null,
       },
       {
         icon: 'mdi-comment-text-outline',
         label: 'Комментарий',
-        value: documentData.value.address?.comment,
+        value: documentData.value.address?.comment || null,
       },
       {
         icon: 'mdi-phone-outline',
         label: 'Контакты',
-        value: documentData.value.address?.contact,
+        value: documentData.value.address?.contact || null,
       },
-    ].filter(item => item.value)
+    )
+
+    return items.filter(item => item.value)
   })
 
   const statusColorMap: Record<string, string> = {
