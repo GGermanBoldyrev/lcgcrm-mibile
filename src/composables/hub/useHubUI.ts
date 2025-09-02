@@ -2,6 +2,7 @@ import { ref, nextTick, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useHubSearch } from './useHubSearch'
 import { useQrScannerUI } from './useQrScannerUI'
+import type { DisplayItem } from '@/types/hub'
 
 export function useHubUI() {
   const route = useRoute()
@@ -105,14 +106,10 @@ export function useHubUI() {
   })
 
   // Элементы для отображения
-  const displayItems = computed(() => {
+  const displayItems = computed((): DisplayItem[] => {
     if (!documentData.value) return []
 
-    const items: Array<{
-      icon: string
-      label: string
-      value: string | null
-    }> = [
+    const items: DisplayItem[] = [
       {
         icon: 'mdi-list-status',
         label: 'Текущий статус',
@@ -123,11 +120,6 @@ export function useHubUI() {
         label: 'Дата создания',
         value: formattedDate.value,
       },
-    ]
-
-
-
-    items.push(
       {
         icon: 'mdi-information-outline',
         label: 'Наименование',
@@ -153,7 +145,7 @@ export function useHubUI() {
         label: 'Контакты',
         value: documentData.value.address?.contact || null,
       },
-    )
+    ]
 
     return items.filter(item => item.value)
   })

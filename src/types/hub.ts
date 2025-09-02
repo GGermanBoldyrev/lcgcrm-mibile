@@ -24,6 +24,13 @@ export interface DocumentMeta {
   documentId: string;
 }
 
+// Элемент для отображения в UI
+export interface DisplayItem {
+  icon: string;
+  label: string;
+  value: string | null;
+}
+
 // Главный интерфейс для всего документа
 export interface DocumentData {
   documentId: string;
