@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import BaseOutlinedTextField from '@/components/base/BaseOutlinedTextField.vue'
+import StatusConfirmDialog from '@/components/hub/StatusConfirmDialog.vue'
 import { useHubUI } from '@/composables/hub/useHubUI'
+import { useStatusConfirm } from '@/composables/hub/useStatusConfirm'
 
 const {
   // Состояние
@@ -37,25 +39,26 @@ const {
   updateStatus
 } = useHubUI()
 
-// Состояние для диалога подтверждения
-const showConfirmDialog = ref(false)
+// Логика подтверждения смены статуса
+const {
+  showConfirmDialog,
+  requestStatusChange,
+  confirmStatusChange,
+  cancelStatusChange
+} = useStatusConfirm()
 
 // Обработчик клика на кнопку смены статуса
 const handleNextStatus = () => {
   if (!documentData.value?.status?.nextStatus) return
-  showConfirmDialog.value = true
+  requestStatusChange()
 }
 
 // Подтверждение смены статуса
-const confirmStatusChange = async () => {
+const handleConfirmStatusChange = async () => {
   if (!documentData.value?.status?.nextStatus) return
-  showConfirmDialog.value = false
-  await updateStatus(documentData.value.status.nextStatus.id)
-}
-
-// Отмена смены статуса
-const cancelStatusChange = () => {
-  showConfirmDialog.value = false
+  await confirmStatusChange(async () => {
+    await updateStatus(documentData.value!.status.nextStatus!.id)
+  })
 }
 </script>
 
@@ -457,40 +460,13 @@ const cancelStatusChange = () => {
     </v-container>
 
     <!-- Диалог подтверждения смены статуса -->
-    <v-dialog v-model="showConfirmDialog" max-width="400" persistent>
-      <v-card class="glossy py-4 px-2" style="border-radius: var(--radius-lg);">
-        <v-card-title class="text-h6 pb-2">
-          <v-icon color="warning" class="mr-2">mdi-alert-circle-outline</v-icon>
-          Подтверждение
-        </v-card-title>
-
-        <v-card-text class="pb-2">
-          <p class="text-body-1 mb-2">
-            Вы уверены, что хотите изменить статус документа?
-          </p>
-        </v-card-text>
-
-        <v-card-actions class="px-4 pb-4">
-          <v-btn
-            color="primary"
-            @click="cancelStatusChange"
-            :disabled="statusChanging"
-            class="flex-grow-1 glossy"
-          >
-            Отмена
-          </v-btn>
-          <v-btn
-            color="success"
-            @click="confirmStatusChange"
-            :loading="statusChanging"
-            :disabled="statusChanging"
-            class="flex-grow-1 ml-2 glossy"
-          >
-            Подтвердить
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <StatusConfirmDialog
+      v-model="showConfirmDialog"
+      :document-data="documentData"
+      :status-changing="statusChanging"
+      @confirm="handleConfirmStatusChange"
+      @cancel="cancelStatusChange"
+    />
   </v-main>
 </template>
 
