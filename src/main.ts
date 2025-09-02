@@ -18,7 +18,7 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
-import { MotionPlugin } from '@vueuse/motion'
+
 
 
 
@@ -40,6 +40,5 @@ useAuthStore().restoreFromStorage()
 
 // Сторонние либы
 app.use(vuetify)
-app.use(MotionPlugin)
 
 app.mount('#app')

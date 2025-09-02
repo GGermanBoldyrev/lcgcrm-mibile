@@ -67,33 +67,12 @@ const handleConfirmStatusChange = async () => {
     <v-container>
       <v-row>
         <v-col cols="12" md="8" lg="6">
-          <v-card class="hub-card glossy" elevation="8" v-motion :initial="{ opacity: 0, y: 40, scale: 0.9 }"
-            :enter="{ opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 250, damping: 20, duration: 500 } }">
+                          <v-card class="hub-card glossy" elevation="8">
             <v-card-text class="pa-6">
               <!-- DATA DISPLAY SECTION -->
-              <div v-if="documentData" class="result-display" v-motion :initial="{
-                opacity: 0,
-                y: 20
-              }" :enter="{
-                opacity: 1,
-                y: 0,
-                transition: {
-                  duration: 500,
-                  delay: 200
-                }
-              }">
+              <div v-if="documentData" class="result-display">
                 <!-- Document Number Section -->
-                <div class="document-number-section mb-4" v-motion :initial="{
-                  opacity: 0,
-                  x: -20
-                }" :enter="{
-                  opacity: 1,
-                  x: 0,
-                  transition: {
-                    duration: 400,
-                    delay: 250
-                  }
-                }">
+                <div class="document-number-section mb-4">
                   <div class="d-flex align-center mb-2">
                     <v-icon color="primary" class="mr-3" size="24">mdi-identifier</v-icon>
                     <div class="flex-grow-1">
@@ -123,19 +102,6 @@ const handleConfirmStatusChange = async () => {
                   v-for="(item, index) in displayItems"
                   :key="item.label"
                   class="detail-item d-flex align-center mb-4"
-                  v-motion
-                  :initial="{
-                    opacity: 0,
-                    x: -20
-                  }"
-                  :enter="{
-                    opacity: 1,
-                    x: 0,
-                    transition: {
-                      duration: 400,
-                      delay: index * 50 + 300
-                    }
-                  }"
                 >
                   <v-icon color="primary" class="mr-3" size="24">{{ item.icon }}</v-icon>
                   <div>
@@ -166,19 +132,6 @@ const handleConfirmStatusChange = async () => {
                     :loading="statusChanging"
                     :disabled="statusChanging"
                     @click="handleNextStatus"
-                    v-motion
-                    :initial="{
-                      opacity: 0,
-                      y: 10
-                    }"
-                    :enter="{
-                      opacity: 1,
-                      y: 0,
-                      transition: {
-                        duration: 400,
-                        delay: 800
-                      }
-                    }"
                   >
                     {{ documentData.status.nextStatus.name }}
                   </v-btn>
@@ -196,19 +149,6 @@ const handleConfirmStatusChange = async () => {
                     class="glossy mb-3"
                     style="border-radius: var(--radius-md);"
                     @click="handleReset"
-                    v-motion
-                    :initial="{
-                      opacity: 0,
-                      y: 10
-                    }"
-                    :enter="{
-                      opacity: 1,
-                      y: 0,
-                      transition: {
-                        duration: 400,
-                        delay: 600
-                      }
-                    }"
                   >
                     Искать снова
                   </v-btn>
@@ -222,19 +162,6 @@ const handleConfirmStatusChange = async () => {
                     class="glossy"
                     style="border-radius: var(--radius-md);"
                     @click="handleScanAgain"
-                    v-motion
-                    :initial="{
-                      opacity: 0,
-                      y: 10
-                    }"
-                    :enter="{
-                      opacity: 1,
-                      y: 0,
-                      transition: {
-                        duration: 400,
-                        delay: 700
-                      }
-                    }"
                   >
                     Сканировать заново
                   </v-btn>
@@ -242,21 +169,7 @@ const handleConfirmStatusChange = async () => {
               </div>
 
               <!-- QR SCANNER UI -->
-              <div v-else-if="showQrScanner" class="qr-scanner-container" v-motion :initial="{
-                opacity: 0,
-                scale: 0.9,
-                y: 30
-              }" :enter="{
-                opacity: 1,
-                scale: 1,
-                y: 0,
-                transition: {
-                  duration: 500,
-                  type: 'spring',
-                  stiffness: 200,
-                  damping: 25
-                }
-              }">
+              <div v-else-if="showQrScanner" class="qr-scanner-container">
                 <div class="qr-scanner-display">
                                     <!-- Video элемент для камеры -->
                   <div class="qr-video-container" :class="{ 'qr-video-container--error': qrError }">
@@ -342,21 +255,7 @@ const handleConfirmStatusChange = async () => {
               <!-- SEARCH UI -->
               <div v-else class="hub-actions">
                 <v-expand-x-transition>
-                  <div v-if="showSearch" class="search-row" v-motion :initial="{
-                    opacity: 0,
-                    x: -30,
-                    scale: 0.95
-                  }" :enter="{
-                    opacity: 1,
-                    x: 0,
-                    scale: 1,
-                    transition: {
-                      duration: 400,
-                      type: 'spring',
-                      stiffness: 200,
-                      damping: 25
-                    }
-                  }">
+                                  <div v-if="showSearch" class="search-row">
                     <BaseOutlinedTextField
                       ref="searchField"
                       v-model="searchId"
@@ -370,36 +269,11 @@ const handleConfirmStatusChange = async () => {
                       :aria-label="'Найти документ'" tabindex="0"
                       @click.stop="isReady && searchById(searchId.trim())"
                       @keyup.enter.stop="isReady && searchById(searchId.trim())"
-                      v-motion
-                      :initial="{
-                        opacity: 0,
-                        scale: 0.8
-                      }"
-                      :enter="{
-                        opacity: 1,
-                        scale: 1,
-                        transition: {
-                          duration: 300,
-                          delay: 150
-                        }
-                      }"
                     >
                       <v-icon size="22" :color="isReady ? 'white' : 'grey'">mdi-magnify</v-icon>
                     </div>
                     <div v-else class="search-append-external mb-4 search-append-external--loading" aria-live="polite"
                       aria-busy="true"
-                      v-motion
-                      :initial="{
-                        opacity: 0,
-                        scale: 0.8
-                      }"
-                      :enter="{
-                        opacity: 1,
-                        scale: 1,
-                        transition: {
-                          duration: 300
-                        }
-                      }"
                     >
                       <v-progress-circular indeterminate size="22" width="3" color="white" />
                     </div>
@@ -409,36 +283,12 @@ const handleConfirmStatusChange = async () => {
                 <v-expand-transition>
                   <v-alert v-if="error" :type="errorType" variant="tonal" density="compact"
                     class="mb-4 glossy rounded-base-md"
-                    v-motion
-                    :initial="{
-                      opacity: 0,
-                      y: -10
-                    }"
-                    :enter="{
-                      opacity: 1,
-                      y: 0,
-                      transition: {
-                        duration: 300
-                      }
-                    }"
                   >
                     {{ error }}
                   </v-alert>
                 </v-expand-transition>
 
-                <div v-if="!showSearch" v-motion :initial="{
-                  opacity: 0,
-                  y: 20
-                }" :enter="{
-                  opacity: 1,
-                  y: 0,
-                  transition: {
-                    duration: 400,
-                    type: 'spring',
-                    stiffness: 200,
-                    damping: 25
-                  }
-                }">
+                <div v-if="!showSearch">
                   <v-btn block color="primary" size="large" prepend-icon="mdi-file-search" class="mb-4 glossy search-btn"
                     style="border-radius: var(--radius-md);" :loading="loading" :disabled="loading"
                     @click="onFindClick"
@@ -451,20 +301,7 @@ const handleConfirmStatusChange = async () => {
                   class="glossy qr-btn" style="border-radius: var(--radius-md);"
                   @click="onQrScanClick"
                   :disabled="loading"
-                  v-motion :initial="{
-                    opacity: 0,
-                    y: 20
-                  }" :enter="{
-                    opacity: 1,
-                    y: 0,
-                    transition: {
-                      duration: 400,
-                      delay: 100,
-                      type: 'spring',
-                      stiffness: 200,
-                      damping: 25
-                    }
-                  }">
+                >
                   Сканировать QR
                 </v-btn>
               </div>
