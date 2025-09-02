@@ -51,11 +51,15 @@ export function useHubUI() {
   }
 
   // Reset с дополнительным UX-фокусом
-  const handleReset = () => {
+  const handleReset = async () => {
     resetSearch()
     searchId.value = ''
-    showSearch.value = false
     closeQrScanner()
+
+    // Показываем поле поиска и ставим фокус
+    showSearch.value = true
+    await nextTick()
+    searchField.value?.$el?.querySelector('input')?.focus()
   }
 
   // QR Scanner functions
