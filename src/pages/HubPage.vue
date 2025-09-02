@@ -4,6 +4,7 @@ import BaseOutlinedTextField from '@/components/base/BaseOutlinedTextField.vue'
 import StatusConfirmDialog from '@/components/hub/StatusConfirmDialog.vue'
 import { useHubUI } from '@/composables/hub/useHubUI'
 import { useStatusConfirm } from '@/composables/hub/useStatusConfirm'
+import HubDocumentCard from '@/components/hub/HubDocumentCard.vue'
 
 const {
   // Состояние
@@ -69,104 +70,18 @@ const handleConfirmStatusChange = async () => {
         <v-col cols="12" md="8" lg="6">
                           <v-card class="hub-card glossy" elevation="8">
             <v-card-text class="pa-6">
+
               <!-- DATA DISPLAY SECTION -->
-              <div v-if="documentData" class="result-display">
-                <!-- Document Number Section -->
-                <div class="document-number-section mb-4">
-                  <div class="d-flex align-center mb-2">
-                    <v-icon color="primary" class="mr-3" size="24">mdi-identifier</v-icon>
-                    <div class="flex-grow-1">
-                      <div class="d-flex align-center justify-space-between">
-                        <div>
-                          <p class="text-caption text-medium-emphasis mb-0 user-select-none">Номер документа</p>
-                          <p class="text-h6 font-weight-bold text-primary mb-0 user-select-none">{{ documentData.documentId }}</p>
-                        </div>
-                        <!-- Индикатор срочности -->
-                        <v-chip
-                          v-if="documentData.meta?.express"
-                          color="error"
-                          variant="tonal"
-                          size="small"
-                          class="ml-2"
-                        >
-                          <v-icon size="16" class="mr-1">mdi-clock-fast</v-icon>
-                          Срочно
-                        </v-chip>
-                      </div>
-                    </div>
-                  </div>
-                  <v-divider class="my-4"></v-divider>
-                </div>
-
-                <div
-                  v-for="(item, index) in displayItems"
-                  :key="item.label"
-                  class="detail-item d-flex align-center mb-4"
-                >
-                  <v-icon color="primary" class="mr-3" size="24">{{ item.icon }}</v-icon>
-                  <div>
-                    <p class="text-caption text-medium-emphasis mb-0 user-select-none">{{ item.label }}</p>
-                    <div v-if="item.label === 'Текущий статус'">
-                      <v-chip
-                        :color="getStatusColor(documentData.status.style)"
-                        variant="tonal"
-                        size="small"
-                        class="mt-1"
-                      >
-                        {{ item.value }}
-                      </v-chip>
-                    </div>
-                    <p v-else class="text-body-1 font-weight-medium text-wrap user-select-none">{{ item.value }}</p>
-                  </div>
-                </div>
-
-                <!-- Кнопка изменения статуса -->
-                <div v-if="documentData?.status?.nextStatus" class="next-status-section mb-6" style="pointer-events: auto;">
-                  <v-btn
-                    block
-                    color="success"
-                    size="large"
-                    prepend-icon="mdi-arrow-right"
-                    class="glossy next-status-btn"
-                    style="border-radius: var(--radius-md);"
-                    :loading="statusChanging"
-                    :disabled="statusChanging"
-                    @click="handleNextStatus"
-                  >
-                    {{ documentData.status.nextStatus.name }}
-                  </v-btn>
-                </div>
-
-                <v-divider class="mb-6" />
-
-                <div class="repeat-actions" style="pointer-events: auto;">
-                  <v-btn
-                    block
-                    variant="outlined"
-                    color="secondary"
-                    size="large"
-                    prepend-icon="mdi-magnify"
-                    class="glossy mb-3"
-                    style="border-radius: var(--radius-md);"
-                    @click="handleReset"
-                  >
-                    Искать снова
-                  </v-btn>
-
-                  <v-btn
-                    block
-                    variant="outlined"
-                    color="primary"
-                    size="large"
-                    prepend-icon="mdi-qrcode-scan"
-                    class="glossy"
-                    style="border-radius: var(--radius-md);"
-                    @click="handleScanAgain"
-                  >
-                    Сканировать заново
-                  </v-btn>
-                </div>
-              </div>
+              <HubDocumentCard
+                v-if="documentData"
+                :document-data="documentData"
+                :display-items="displayItems"
+                :status-changing="statusChanging"
+                :get-status-color="getStatusColor"
+                @next-status="handleNextStatus"
+                @reset="handleReset"
+                @scan-again="handleScanAgain"
+              />
 
               <!-- QR SCANNER UI -->
               <div v-else-if="showQrScanner" class="qr-scanner-container">
@@ -332,30 +247,6 @@ const handleConfirmStatusChange = async () => {
   max-width: 400px;
 }
 
-/* Предотвращение выделения текста в карточке */
-.result-display {
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-}
-
-.detail-item {
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  pointer-events: none; /* Отключаем все события для элементов данных */
-}
-
-.document-number-section {
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  pointer-events: none; /* Отключаем все события для секции номера документа */
-}
-
 .search-row {
   display: flex;
   align-items: center;
@@ -420,10 +311,6 @@ const handleConfirmStatusChange = async () => {
 
 /* Styles for the data display section */
 .result-display {
-  max-width: 400px;
-}
-
-.repeat-actions {
   max-width: 400px;
 }
 
@@ -498,20 +385,6 @@ const handleConfirmStatusChange = async () => {
 .v-btn:active:not(:disabled) {
   transform: translateY(0);
   transition-duration: 0.1s;
-}
-
-/* Next Status Button Styles */
-.next-status-section {
-  max-width: 400px;
-}
-
-.next-status-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 24px rgba(var(--v-theme-success), 0.3);
-}
-
-.next-status-btn:active {
-  transform: translateY(0);
 }
 
 /* QR Scanner Styles */
