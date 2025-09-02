@@ -51,23 +51,7 @@ const handleNextStatus = async () => {
           <v-card class="hub-card glossy" elevation="8" v-motion :initial="{ opacity: 0, y: 40, scale: 0.9 }"
             :enter="{ opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 250, damping: 20, duration: 500 } }">
             <v-card-text class="pa-6">
-              <div class="d-flex align-center mb-6">
-                <v-avatar size="80" color="primary" class="mr-4">
-                  <v-icon size="40" color="white">
-                    {{ documentData ? 'mdi-file-check-outline' : 'mdi-file-document-outline' }}
-                  </v-icon>
-                </v-avatar>
-                <div>
-                  <h2 class="text-h5 font-weight-bold mb-1">Канцелярия</h2>
-                  <p class="text-body-1 text-medium-emphasis mb-0">
-                    {{ documentData ? `Информация по документу №${documentData.rosterNum}` : 'Центр управления документами' }}
-                  </p>
-                </div>
-              </div>
-
-              <v-divider class="mb-6" />
-
-                                                        <!-- DATA DISPLAY SECTION -->
+              <!-- DATA DISPLAY SECTION -->
               <div v-if="documentData" class="result-display" v-motion :initial="{
                 opacity: 0,
                 y: 20
@@ -79,6 +63,28 @@ const handleNextStatus = async () => {
                   delay: 200
                 }
               }">
+                <!-- Document Number Section -->
+                <div class="document-number-section mb-4" v-motion :initial="{
+                  opacity: 0,
+                  x: -20
+                }" :enter="{
+                  opacity: 1,
+                  x: 0,
+                  transition: {
+                    duration: 400,
+                    delay: 250
+                  }
+                }">
+                  <div class="d-flex align-center mb-2">
+                    <v-icon color="primary" class="mr-3" size="24">mdi-identifier</v-icon>
+                    <div>
+                      <p class="text-caption text-medium-emphasis mb-0">Номер документа</p>
+                      <p class="text-h6 font-weight-bold text-primary mb-0">{{ documentData.documentId }}</p>
+                    </div>
+                  </div>
+                  <v-divider class="my-4"></v-divider>
+                </div>
+
                 <div
                   v-for="(item, index) in displayItems"
                   :key="item.label"

@@ -21,12 +21,13 @@ export interface DocumentMeta {
   createdAt: string; // ISO-строка даты
   express: boolean;
   photos: null;
-  rosterNum: string;
+  documentId: string;
 }
 
 // Главный интерфейс для всего документа
 export interface DocumentData {
-  rosterNum: string;
+  documentId: string;
+  originalCode: string; // Код который был передан для поиска (для отправки в статус API)
   meta: DocumentMeta;
   info: DocumentInfo;
   address: DocumentAddress;
