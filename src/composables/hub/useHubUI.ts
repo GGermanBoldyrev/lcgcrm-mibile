@@ -2,7 +2,13 @@ import { ref, nextTick, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useHubSearch } from './useHubSearch'
 import { useQrScannerUI } from './useQrScannerUI'
-import type { DisplayItem } from '@/types/hub'
+import type { DisplayItem, ShippingFlags } from '@/types/hub'
+
+// Импорты иконок
+import diamondIcon from '@/assets/images/icons/hub/shippingStatuses/diamond.svg'
+import emailIcon from '@/assets/images/icons/hub/shippingStatuses/email.png'
+import gavelIcon from '@/assets/images/icons/hub/shippingStatuses/gavel.svg'
+import gavelbIcon from '@/assets/images/icons/hub/shippingStatuses/gavelb.svg'
 
 export function useHubUI() {
   const route = useRoute()
@@ -93,6 +99,45 @@ export function useHubUI() {
     })
   }
 
+  // Генерация HTML строки для статусных иконок
+  const generateShippingStatusHTML = (shipping: ShippingFlags): string => {
+    const icons: string[] = []
+
+    // Функция для создания иконки с CSS классами
+    const createIcon = (src: string, isActive: boolean, alt: string) => {
+      const className = isActive ? 'activeImg' : 'activeImg icon-inactive'
+      return `<img src="${src}" class="${className}" alt="${alt}" style="width: 35px; height: 35px; margin-right: 8px;" />`
+    }
+
+    // Email icon (edi)
+    if (shipping.edi !== null) {
+      icons.push(createIcon(emailIcon, shipping.edi, 'EDI'))
+    }
+
+    // Diamond icon (deliveryPriority)
+    if (shipping.deliveryPriority !== null) {
+      icons.push(createIcon(diamondIcon, shipping.deliveryPriority, 'Priority'))
+    }
+
+    // Gavel icon (isAR/bdz logic)
+    if (shipping.isAR !== null || shipping.bdz !== null) {
+      let src = gavelIcon
+      let isActive = false
+
+      if (shipping.isAR) {
+        src = gavelIcon
+        isActive = true
+      } else if (shipping.bdz) {
+        src = gavelbIcon
+        isActive = true
+      }
+
+      icons.push(createIcon(src, isActive, 'Legal'))
+    }
+
+    return `<div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">${icons.join('')}</div>`
+  }
+
   // Форматирование даты
   const formattedDate = computed(() => {
     if (!documentData.value?.meta?.createdAt) return ''
@@ -108,6 +153,8 @@ export function useHubUI() {
   // Элементы для отображения
   const displayItems = computed((): DisplayItem[] => {
     if (!documentData.value) return []
+
+    const shippingFlags = documentData.value.shippingFlags
 
     const items: DisplayItem[] = [
       {
@@ -146,6 +193,14 @@ export function useHubUI() {
         value: documentData.value.address?.contact || null,
       },
     ]
+
+    if (shippingFlags) {
+      items.push({
+        icon: 'mdi-truck-delivery-outline',
+        label: 'Статусы доставки',
+        value: generateShippingStatusHTML(shippingFlags)
+      })
+    }
 
     return items.filter(item => item.value)
   })

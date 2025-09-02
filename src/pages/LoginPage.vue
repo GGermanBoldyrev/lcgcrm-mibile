@@ -10,7 +10,6 @@ const {
   canSubmit,
   loginFieldRef,
   onLogin,
-  loginWithMockData,
 } = useLoginForm()
 </script>
 
@@ -65,13 +64,7 @@ const {
             Войти
           </v-btn>
 
-          <v-divider class="my-4" />
-          <v-btn variant="outlined" color="secondary" size="large" block class="glossy"
-            @click="loginWithMockData"
-            style="border-radius: var(--radius-md);"
->
-            Войти (тест)
-          </v-btn>
+
         </v-form>
       </v-card-text>
     </v-card>

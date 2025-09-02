@@ -1,0 +1,76 @@
+/**
+ * Utility классы для иконок
+ */
+
+/* Состояния иконок */
+.icon-inactive {
+  opacity: 0.4;
+  filter: grayscale(100%);
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.icon-disabled {
+  opacity: 0.3;
+  filter: grayscale(100%) blur(1px);
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.icon-active {
+  opacity: 1;
+  filter: none;
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+/* Размеры иконок */
+.icon-xs {
+  width: 16px;
+  height: 16px;
+}
+
+.icon-sm {
+  width: 20px;
+  height: 20px;
+}
+
+.icon-md {
+  width: 24px;
+  height: 24px;
+}
+
+.icon-lg {
+  width: 32px;
+  height: 32px;
+}
+
+.icon-xl {
+  width: 48px;
+  height: 48px;
+}
+
+/* Отступы для иконок */
+.icon-mr-1 {
+  margin-right: 4px;
+}
+
+.icon-mr-2 {
+  margin-right: 8px;
+}
+
+.icon-mr-3 {
+  margin-right: 12px;
+}
+
+.icon-mr-4 {
+  margin-right: 16px;
+}
+
+/* Hover эффекты */
+.icon-hover:hover {
+  opacity: 0.8;
+  transform: scale(1.05);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.icon-hover:active {
+  transform: scale(0.95);
+}

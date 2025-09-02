@@ -6,6 +6,13 @@ export interface DocumentStatus {
   nextStatus?: DocumentStatus | null; // Следующий статус, если есть
 }
 
+export interface ShippingFlags {
+  bdz: boolean;
+  deliveryPriority: boolean;
+  edi: boolean;
+  isAR: boolean;
+}
+
 export interface DocumentInfo {
   comment: string | null;
   name: string;
@@ -38,10 +45,5 @@ export interface DocumentData {
   info: DocumentInfo;
   address: DocumentAddress;
   status: DocumentStatus;
-  shipping: {
-    bdz: boolean;
-    deliveryPriority: boolean;
-    edi: boolean;
-    isAR: boolean;
-  };
+  shippingFlags: ShippingFlags;
 }

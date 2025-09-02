@@ -61,6 +61,7 @@ const handleConfirmStatusChange = async () => {
     await updateStatus(documentData.value!.status.nextStatus!.id)
   })
 }
+
 </script>
 
 <template>

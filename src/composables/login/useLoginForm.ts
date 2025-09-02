@@ -141,25 +141,11 @@ export function useLoginForm() {
     }
   }
 
-  // Тестовый логин
-  const loginWithMockData = () => {
-    setAuth('mock-token-123', {
-      login: 'testuser',
-      fullName: 'Иванов Иван Иванович',
-      email: 'ivanov.ii@company.com',
-      department: 'Отдел разработки',
-      position: 'Старший разработчик',
-      phone: '+7 (999) 123-45-67'
-    })
-    router.replace({ name: 'main' })
-  }
-
   return {
     state,
     canSubmit,
     loginFieldRef,
     onLogin,
-    loginWithMockData,
     focusLogin
   }
 }

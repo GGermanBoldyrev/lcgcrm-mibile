@@ -65,6 +65,7 @@ defineEmits<Emits>()
             {{ item.value }}
           </v-chip>
         </div>
+        <div v-else-if="item.label === 'Статусы доставки'" v-html="item.value" class="shipping-status-container"></div>
         <p v-else class="text-body-1 font-weight-medium text-wrap user-select-none">{{ item.value }}</p>
       </div>
     </div>

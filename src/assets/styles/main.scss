@@ -1,8 +1,11 @@
 // Базовые настройки
 @forward 'settings/variables';
 
-// Компоненты
+// Базовые стили
 @forward 'base/base';
 
 // Компоненты
 @forward 'components/glassmorphism';
+
+// Утилиты
+@forward 'utilities/icons';
