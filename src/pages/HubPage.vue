@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import BaseOutlinedTextField from '@/components/base/BaseOutlinedTextField.vue'
 import { useHubUI } from '@/composables/hub/useHubUI'
 
@@ -36,10 +37,25 @@ const {
   updateStatus
 } = useHubUI()
 
-// Обработчик изменения статуса
-const handleNextStatus = async () => {
+// Состояние для диалога подтверждения
+const showConfirmDialog = ref(false)
+
+// Обработчик клика на кнопку смены статуса
+const handleNextStatus = () => {
   if (!documentData.value?.status?.nextStatus) return
+  showConfirmDialog.value = true
+}
+
+// Подтверждение смены статуса
+const confirmStatusChange = async () => {
+  if (!documentData.value?.status?.nextStatus) return
+  showConfirmDialog.value = false
   await updateStatus(documentData.value.status.nextStatus.id)
+}
+
+// Отмена смены статуса
+const cancelStatusChange = () => {
+  showConfirmDialog.value = false
 }
 </script>
 
@@ -439,6 +455,42 @@ const handleNextStatus = async () => {
         </v-col>
       </v-row>
     </v-container>
+
+    <!-- Диалог подтверждения смены статуса -->
+    <v-dialog v-model="showConfirmDialog" max-width="400" persistent>
+      <v-card class="glossy py-4 px-2" style="border-radius: var(--radius-lg);">
+        <v-card-title class="text-h6 pb-2">
+          <v-icon color="warning" class="mr-2">mdi-alert-circle-outline</v-icon>
+          Подтверждение
+        </v-card-title>
+
+        <v-card-text class="pb-2">
+          <p class="text-body-1 mb-2">
+            Вы уверены, что хотите изменить статус документа?
+          </p>
+        </v-card-text>
+
+        <v-card-actions class="px-4 pb-4">
+          <v-btn
+            color="primary"
+            @click="cancelStatusChange"
+            :disabled="statusChanging"
+            class="flex-grow-1 glossy"
+          >
+            Отмена
+          </v-btn>
+          <v-btn
+            color="success"
+            @click="confirmStatusChange"
+            :loading="statusChanging"
+            :disabled="statusChanging"
+            class="flex-grow-1 ml-2 glossy"
+          >
+            Подтвердить
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-main>
 </template>
 

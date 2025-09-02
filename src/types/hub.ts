@@ -27,7 +27,6 @@ export interface DocumentMeta {
 // Главный интерфейс для всего документа
 export interface DocumentData {
   documentId: string;
-  originalCode: string; // Код который был передан для поиска (для отправки в статус API)
   meta: DocumentMeta;
   info: DocumentInfo;
   address: DocumentAddress;

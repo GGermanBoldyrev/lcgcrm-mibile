@@ -11,6 +11,7 @@ interface SearchState {
   errorType: 'error' | 'warning';
   statusChanging: boolean;
   searchMethod: 'manual' | 'barcode' | null; // Способ получения данных
+  originalCode: string | null; // Код который был передан для поиска (сохраняется на фронтенде)
 }
 
 export function useHubSearch() {
@@ -22,6 +23,7 @@ export function useHubSearch() {
     errorType: 'error',
     statusChanging: false,
     searchMethod: null,
+    originalCode: null,
   });
 
   // Функция для поиска документа по коду (универсальная)
@@ -32,15 +34,13 @@ export function useHubSearch() {
     state.error = '';
     state.data = null;
     state.searchMethod = method;
+    state.originalCode = code; // Сохраняем оригинальный код на фронтенде
 
     try {
       // Ожидаем, что сам `response.data` будет типа DocumentData
       const response = await api.get<DocumentData>(`${endpoint}?code=${code}`);
-      // Присваиваем данные и добавляем originalCode
-      state.data = {
-        ...response.data,
-        originalCode: code
-      };
+      // Присваиваем данные напрямую от сервера
+      state.data = response.data;
     } catch (e: any) {
       const status = e.response?.status;
       const responseData = e.response?.data;
@@ -73,6 +73,7 @@ export function useHubSearch() {
     state.data = null;
     state.error = '';
     state.searchMethod = null;
+    state.originalCode = null;
   };
 
   // Функция изменения статуса документа
@@ -98,7 +99,7 @@ export function useHubSearch() {
 
       // Подготавливаем тело запроса
       const requestBody = {
-        code: state.data.originalCode,
+        code: state.originalCode,
         status: statusId,
         userId: userId.toString()
       };
