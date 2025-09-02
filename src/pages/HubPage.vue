@@ -78,8 +78,8 @@ const handleNextStatus = async () => {
                   <div class="d-flex align-center mb-2">
                     <v-icon color="primary" class="mr-3" size="24">mdi-identifier</v-icon>
                     <div>
-                      <p class="text-caption text-medium-emphasis mb-0">Номер документа</p>
-                      <p class="text-h6 font-weight-bold text-primary mb-0">{{ documentData.documentId }}</p>
+                      <p class="text-caption text-medium-emphasis mb-0 user-select-none">Номер документа</p>
+                      <p class="text-h6 font-weight-bold text-primary mb-0 user-select-none">{{ documentData.documentId }}</p>
                     </div>
                   </div>
                   <v-divider class="my-4"></v-divider>
@@ -105,7 +105,7 @@ const handleNextStatus = async () => {
                 >
                   <v-icon color="primary" class="mr-3" size="24">{{ item.icon }}</v-icon>
                   <div>
-                    <p class="text-caption text-medium-emphasis mb-0">{{ item.label }}</p>
+                    <p class="text-caption text-medium-emphasis mb-0 user-select-none">{{ item.label }}</p>
                     <div v-if="item.label === 'Текущий статус'">
                       <v-chip
                         :color="getStatusColor(documentData.status.style)"
@@ -116,12 +116,12 @@ const handleNextStatus = async () => {
                         {{ item.value }}
                       </v-chip>
                     </div>
-                    <p v-else class="text-body-1 font-weight-medium text-wrap">{{ item.value }}</p>
+                    <p v-else class="text-body-1 font-weight-medium text-wrap user-select-none">{{ item.value }}</p>
                   </div>
                 </div>
 
                 <!-- Кнопка изменения статуса -->
-                <div v-if="documentData?.status?.nextStatus" class="next-status-section mb-6">
+                <div v-if="documentData?.status?.nextStatus" class="next-status-section mb-6" style="pointer-events: auto;">
                   <v-btn
                     block
                     color="success"
@@ -152,7 +152,7 @@ const handleNextStatus = async () => {
 
                 <v-divider class="mb-6" />
 
-                <div class="repeat-actions">
+                <div class="repeat-actions" style="pointer-events: auto;">
                   <v-btn
                     block
                     variant="outlined"
@@ -450,6 +450,30 @@ const handleNextStatus = async () => {
 
 .hub-actions {
   max-width: 400px;
+}
+
+/* Предотвращение выделения текста в карточке */
+.result-display {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.detail-item {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  pointer-events: none; /* Отключаем все события для элементов данных */
+}
+
+.document-number-section {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  pointer-events: none; /* Отключаем все события для секции номера документа */
 }
 
 .search-row {

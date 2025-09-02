@@ -93,8 +93,8 @@ export function useHubSearch() {
     try {
       // Определяем эндпоинт в зависимости от способа получения данных
       const endpoint = state.searchMethod === 'manual'
-        ? '/hub/document/manual/status'
-        : '/hub/document/barcode/status';
+        ? '/mobile/hub/document/manual/status'
+        : '/mobile/hub/document/barcode/status';
 
       // Подготавливаем тело запроса
       const requestBody = {
