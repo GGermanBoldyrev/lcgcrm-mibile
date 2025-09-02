@@ -38,8 +38,6 @@ const goProfile = () => router.push({ name: 'profile' })
 
 <style scoped>
 .top-app-bar {
-  border-bottom-left-radius: var(--radius-lg);
-  border-bottom-right-radius: var(--radius-lg);
   height: 82px;
   border-bottom: 1px solid rgba(0, 0, 0, .06);
 }
