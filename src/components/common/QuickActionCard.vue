@@ -47,21 +47,7 @@ const goToSecondary = async () => {
   <div class="qa-container">
     <!-- Основная карта -->
     <v-card class="qa-card pa-4 glossy" :class="{ 'qa-card--compact': isCompact }" elevation="8" role="button"
-      tabindex="0" :aria-label="label || 'Действие'" @click="goToPrimary" @keyup.enter="goToPrimary" v-motion :initial="{
-        opacity: 0,
-        y: 20,
-        scale: 0.95
-      }" :enter="{
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        transition: {
-          type: 'spring',
-          stiffness: 300,
-          damping: 25,
-          duration: 500
-        }
-      }" style="border-radius: var(--radius-md);">
+      tabindex="0" :aria-label="label || 'Действие'" @click="goToPrimary" @keyup.enter="goToPrimary" style="border-radius: var(--radius-md);">
       <div class="d-flex align-center" :class="{ 'justify-center': isCompact }">
         <v-avatar size="44" :class="{ 'mr-4': !isCompact }" :color="color">
           <v-icon size="26" color="white">{{ icon }}</v-icon>
@@ -74,22 +60,7 @@ const goToSecondary = async () => {
     <v-card v-if="hasSecondaryCard" class="qa-card qa-card--secondary pa-4 ml-3 glossy"
       :class="{ 'qa-card--compact': isSecondaryCompact }" elevation="8" role="button" tabindex="0"
       :aria-label="secondaryLabel || 'Дополнительное действие'" @click="goToSecondary" @keyup.enter="goToSecondary"
-      v-motion :initial="{
-        opacity: 0,
-        y: 20,
-        scale: 0.95
-      }" :enter="{
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        transition: {
-          type: 'spring',
-          stiffness: 300,
-          damping: 25,
-          duration: 500,
-          delay: 100
-        }
-      }" style="border-radius: var(--radius-md);">
+      style="border-radius: var(--radius-md);">
       <div class="d-flex align-center" :class="{ 'justify-center': isSecondaryCompact }">
         <v-avatar size="44" :class="{ 'mr-4': !isSecondaryCompact }" :color="secondaryColor">
           <v-icon size="26" color="white">{{ secondaryIcon }}</v-icon>

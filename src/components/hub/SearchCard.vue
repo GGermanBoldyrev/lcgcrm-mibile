@@ -52,23 +52,7 @@ defineExpose({
       <div
         v-if="showSearch"
         class="search-row"
-        v-motion
-        :initial="{
-          opacity: 0,
-          x: -30,
-          scale: 0.95
-        }"
-        :enter="{
-          opacity: 1,
-          x: 0,
-          scale: 1,
-          transition: {
-            duration: 400,
-            type: 'spring',
-            stiffness: 200,
-            damping: 25
-          }
-        }"
+
       >
         <BaseOutlinedTextField
           ref="searchField"
@@ -87,19 +71,7 @@ defineExpose({
           tabindex="0"
           @click.stop="handleSearch"
           @keyup.enter.stop="handleSearch"
-          v-motion
-          :initial="{
-            opacity: 0,
-            scale: 0.8
-          }"
-          :enter="{
-            opacity: 1,
-            scale: 1,
-            transition: {
-              duration: 300,
-              delay: 150
-            }
-          }"
+
         >
           <v-icon size="22" :color="isReady ? 'white' : 'grey'">mdi-magnify</v-icon>
         </div>
@@ -108,18 +80,7 @@ defineExpose({
           class="search-append-external mb-4 search-append-external--loading"
           aria-live="polite"
           aria-busy="true"
-          v-motion
-          :initial="{
-            opacity: 0,
-            scale: 0.8
-          }"
-          :enter="{
-            opacity: 1,
-            scale: 1,
-            transition: {
-              duration: 300
-            }
-          }"
+
         >
           <v-progress-circular indeterminate size="22" width="3" color="white" />
         </div>
@@ -133,18 +94,7 @@ defineExpose({
         variant="tonal"
         density="compact"
         class="mb-4 glossy rounded-base-md"
-        v-motion
-        :initial="{
-          opacity: 0,
-          y: -10
-        }"
-        :enter="{
-          opacity: 1,
-          y: 0,
-          transition: {
-            duration: 300
-          }
-        }"
+
       >
         {{ error }}
       </v-alert>
@@ -152,21 +102,7 @@ defineExpose({
 
     <div
       v-if="!showSearch"
-      v-motion
-      :initial="{
-        opacity: 0,
-        y: 20
-      }"
-      :enter="{
-        opacity: 1,
-        y: 0,
-        transition: {
-          duration: 400,
-          type: 'spring',
-          stiffness: 200,
-          damping: 25
-        }
-      }"
+
     >
       <v-btn
         block
@@ -193,22 +129,7 @@ defineExpose({
       style="border-radius: var(--radius-md);"
       @click="handleQrClick"
       :disabled="loading"
-      v-motion
-      :initial="{
-        opacity: 0,
-        y: 20
-      }"
-      :enter="{
-        opacity: 1,
-        y: 0,
-        transition: {
-          duration: 400,
-          delay: 100,
-          type: 'spring',
-          stiffness: 200,
-          damping: 25
-        }
-      }"
+
     >
       Сканировать QR
     </v-btn>

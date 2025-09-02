@@ -26,37 +26,12 @@ const handleScanAgain = () => {
 <template>
   <div
     class="result-display"
-    v-motion
-    :initial="{
-      opacity: 0,
-      y: 20
-    }"
-    :enter="{
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 500,
-        delay: 200
-      }
-    }"
   >
     <div
       v-for="(item, index) in displayItems"
       :key="item.label"
       class="detail-item d-flex align-center mb-4"
-      v-motion
-      :initial="{
-        opacity: 0,
-        x: -20
-      }"
-      :enter="{
-        opacity: 1,
-        x: 0,
-        transition: {
-          duration: 400,
-          delay: index * 50 + 300
-        }
-      }"
+
     >
       <v-icon color="primary" class="mr-3" size="24">{{ item.icon }}</v-icon>
       <div>
@@ -87,19 +62,7 @@ const handleScanAgain = () => {
         class="glossy mb-3"
         style="border-radius: var(--radius-md);"
         @click="handleReset"
-        v-motion
-        :initial="{
-          opacity: 0,
-          y: 10
-        }"
-        :enter="{
-          opacity: 1,
-          y: 0,
-          transition: {
-            duration: 400,
-            delay: 600
-          }
-        }"
+
       >
         Искать снова
       </v-btn>
@@ -113,19 +76,7 @@ const handleScanAgain = () => {
         class="glossy"
         style="border-radius: var(--radius-md);"
         @click="handleScanAgain"
-        v-motion
-        :initial="{
-          opacity: 0,
-          y: 10
-        }"
-        :enter="{
-          opacity: 1,
-          y: 0,
-          transition: {
-            duration: 400,
-            delay: 700
-          }
-        }"
+
       >
         Сканировать заново
       </v-btn>

@@ -19,21 +19,7 @@ const {
     <v-card v-show="true" width="310" class="glossy pa-9" elevation="8" style="border-radius: var(--radius-lg);">
       <v-card-text class="pa-0">
         <div class="d-flex justify-center mb-5">
-          <v-img :src="logoUrl" class="my-5" v-motion :initial="{
-            opacity: 0,
-            scale: 0.8,
-            y: -20
-          }" :enter="{
-            opacity: 1,
-            scale: 1,
-            y: 0,
-            transition: {
-              type: 'spring',
-              stiffness: 150,
-              damping: 15,
-              duration: 1200
-            }
-          }" />
+          <v-img :src="logoUrl" class="my-5" />
         </div>
         <v-form autocomplete="on" @submit.prevent="onLogin">
           <BaseOutlinedTextField
@@ -48,7 +34,7 @@ const {
             :error-messages="state.errors.login"
             @input="() => {}"
             @change="() => {}"
-            v-motion :initial="{ opacity: 0 }" :enter="{ opacity: 1, transition: { duration: 600, delay: 200 } }"
+
           />
 
           <BaseOutlinedTextField
@@ -63,21 +49,19 @@ const {
             @input="() => {}"
             @change="() => {}"
             @click:append-inner="state.visiblePassword = !state.visiblePassword"
-            v-motion :initial="{ opacity: 0 }" :enter="{ opacity: 1, transition: { duration: 600, delay: 300 } }"
+
           />
 
           <v-alert v-if="state.errors.general"
             type="error" variant="tonal" density="compact" class="mb-5 glossy rounded-base-md"
-            v-motion :initial="{ opacity: 0, scale: 0.9 }" :enter="{
-              opacity: 1, scale: 1, transition: { type: 'spring', stiffness: 300, damping: 20, duration: 400 }
-            }">
+>
             {{ state.errors.general }}
           </v-alert>
 
           <v-btn type="submit" color="primary" size="large" block class="glossy"
             :loading="state.loading" :disabled="!canSubmit"
             style="border-radius: var(--radius-md);"
-            v-motion :initial="{ opacity: 0 }" :enter="{ opacity: 1, transition: { duration: 400 } }">
+>
             Войти
           </v-btn>
 
@@ -85,7 +69,7 @@ const {
           <v-btn variant="outlined" color="secondary" size="large" block class="glossy"
             @click="loginWithMockData"
             style="border-radius: var(--radius-md);"
-            v-motion :initial="{ opacity: 0 }" :enter="{ opacity: 1, transition: { duration: 400 } }">
+>
             Войти (тест)
           </v-btn>
         </v-form>

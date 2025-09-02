@@ -101,23 +101,6 @@ watch(() => props.show, (newVal) => {
   <div
     v-if="show"
     class="qr-scanner-container"
-    v-motion
-    :initial="{
-      opacity: 0,
-      scale: 0.9,
-      y: 30
-    }"
-    :enter="{
-      opacity: 1,
-      scale: 1,
-      y: 0,
-      transition: {
-        duration: 500,
-        type: 'spring',
-        stiffness: 200,
-        damping: 25
-      }
-    }"
   >
     <div class="qr-scanner-display">
       <!-- Video элемент для камеры (показываем только если нет ошибки) -->
