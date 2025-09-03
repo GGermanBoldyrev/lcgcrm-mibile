@@ -2,8 +2,10 @@
 import { ref } from 'vue'
 import BaseOutlinedTextField from '@/components/base/BaseOutlinedTextField.vue'
 import StatusConfirmDialog from '@/components/hub/StatusConfirmDialog.vue'
+import FloatingActionBar from '@/components/common/FloatingActionBar.vue'
 import { useHubUI } from '@/composables/hub/useHubUI'
 import { useStatusConfirm } from '@/composables/hub/useStatusConfirm'
+import { useHubFloatingBar } from '@/composables/hub/useHubFloatingBar'
 import HubDocumentCard from '@/components/hub/HubDocumentCard.vue'
 
 const {
@@ -48,6 +50,9 @@ const {
   cancelStatusChange
 } = useStatusConfirm()
 
+// Floating Action Bar конфигурация
+const { buttonRows } = useHubFloatingBar(documentData, statusChanging)
+
 // Обработчик клика на кнопку смены статуса
 const handleNextStatus = () => {
   if (!documentData.value?.status?.nextStatus) return
@@ -79,9 +84,6 @@ const handleConfirmStatusChange = async () => {
                 :display-items="displayItems"
                 :status-changing="statusChanging"
                 :get-status-color="getStatusColor"
-                @next-status="handleNextStatus"
-                @reset="handleReset"
-                @scan-again="handleScanAgain"
               />
 
               <!-- QR SCANNER UI -->
@@ -235,6 +237,15 @@ const handleConfirmStatusChange = async () => {
       @confirm="handleConfirmStatusChange"
       @cancel="cancelStatusChange"
     />
+
+    <!-- Floating Action Bar -->
+    <FloatingActionBar
+      :visible="!!documentData"
+      :button-rows="buttonRows"
+      @reset="handleReset"
+      @scanAgain="handleScanAgain"
+      @nextStatus="handleNextStatus"
+    />
   </v-main>
 </template>
 
@@ -242,6 +253,11 @@ const handleConfirmStatusChange = async () => {
 .hub-card {
   border-radius: var(--radius-lg);
   border: 1px solid rgba(0, 0, 0, .06);
+}
+
+/* Отступ снизу чтобы floating bar не перекрывал контент */
+.v-container {
+  padding-bottom: 140px;
 }
 
 .hub-actions {

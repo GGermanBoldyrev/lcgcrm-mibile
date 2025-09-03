@@ -9,9 +9,6 @@ interface Props {
 }
 
 interface Emits {
-  (e: 'nextStatus'): void
-  (e: 'reset'): void
-  (e: 'scanAgain'): void
 }
 
 defineProps<Props>()
@@ -70,72 +67,9 @@ defineEmits<Emits>()
       </div>
     </div>
 
-    <!-- Кнопка изменения статуса -->
-    <div v-if="documentData?.status?.nextStatus" class="next-status-section mb-6" style="pointer-events: auto;">
-      <v-btn
-        block
-        color="success"
-        size="large"
-        prepend-icon="mdi-arrow-right"
-        class="glossy next-status-btn"
-        style="border-radius: var(--radius-md);"
-        :loading="statusChanging"
-        :disabled="statusChanging"
-        @click="$emit('nextStatus')"
-      >
-        {{ documentData.status.nextStatus.name }}
-      </v-btn>
-    </div>
 
-    <v-divider class="mb-6" />
-
-    <div class="repeat-actions" style="pointer-events: auto;">
-      <v-btn
-        block
-        variant="outlined"
-        color="secondary"
-        size="large"
-        prepend-icon="mdi-magnify"
-        class="glossy mb-3"
-        style="border-radius: var(--radius-md);"
-        @click="$emit('reset')"
-      >
-        Искать снова
-      </v-btn>
-
-      <v-btn
-        block
-        variant="outlined"
-        color="primary"
-        size="large"
-        prepend-icon="mdi-qrcode-scan"
-        class="glossy"
-        style="border-radius: var(--radius-md);"
-        @click="$emit('scanAgain')"
-      >
-        Сканировать заново
-      </v-btn>
-    </div>
   </div>
 </template>
 
 <style scoped>
-
-.repeat-actions {
-  max-width: 400px;
-}
-
-/* Next Status Button Styles */
-.next-status-section {
-  max-width: 400px;
-}
-
-.next-status-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 24px rgba(var(--v-theme-success), 0.3);
-}
-
-.next-status-btn:active {
-  transform: translateY(0);
-}
 </style>
