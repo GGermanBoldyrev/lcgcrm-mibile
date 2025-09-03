@@ -37,26 +37,26 @@ export function useHubFloatingBar(documentData: any, statusChanging: any) {
 
          // Второй ряд: Искать снова + Сканировать
      rows.push([
-       {
-         text: 'Искать снова',
-         event: 'reset',
-         props: {
-           variant: 'outlined',
-           color: 'secondary',
-           size: 'large',
-           'prepend-icon': 'mdi-magnify',
-         },
-       },
-       {
-         text: 'Сканировать',
-         event: 'scanAgain',
-         props: {
-           variant: 'outlined',
-           color: 'primary',
-           size: 'large',
-           'prepend-icon': 'mdi-qrcode-scan',
-         },
-       },
+             {
+        text: 'Искать снова',
+        event: 'reset',
+        props: {
+          color: 'primary',
+          size: 'large',
+          'prepend-icon': 'mdi-magnify',
+        },
+        style: 'font-size: 14px; border-radius: var(--radius-md);',
+      },
+             {
+        text: 'Сканировать',
+        event: 'scanAgain',
+        props: {
+          color: 'primary',
+          size: 'large',
+          'prepend-icon': 'mdi-qrcode-scan',
+        },
+        style: 'font-size: 14px; border-radius: var(--radius-md);',
+      },
      ])
 
     return rows
