@@ -9,3 +9,9 @@
 
 // Утилиты
 @forward 'utilities/icons';
+
+// Глобальные стили для floating bar
+.v-main {
+  padding-bottom: var(--floating-bar-spacing, 0) !important;
+  transition: padding-bottom 0.3s ease;
+}

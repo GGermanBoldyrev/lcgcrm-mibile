@@ -25,6 +25,8 @@
 </template>
 
 <script setup lang="ts">
+import { watch, onMounted, onUnmounted } from 'vue'
+
 interface ButtonConfig {
   text: string
   event: string
@@ -39,7 +41,7 @@ interface Props {
   buttonRows: ButtonConfig[][]
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 
 // Эмиты для Hub компонента
 const emit = defineEmits<{
@@ -47,6 +49,38 @@ const emit = defineEmits<{
   scanAgain: []
   nextStatus: []
 }>()
+
+// Автоматическое управление отступом через CSS переменную
+const FLOATING_BAR_SPACING = 90 // Высота floating bar + отступы
+
+const setFloatingBarSpacing = () => {
+  document.documentElement.style.setProperty('--floating-bar-spacing', `${FLOATING_BAR_SPACING}px`)
+}
+
+const removeFloatingBarSpacing = () => {
+  document.documentElement.style.removeProperty('--floating-bar-spacing')
+}
+
+// Инициализация при монтировании
+onMounted(() => {
+  if (props.visible) {
+    setFloatingBarSpacing()
+  }
+})
+
+// Следим за видимостью floating bar
+watch(() => props.visible, (isVisible) => {
+  if (isVisible) {
+    setFloatingBarSpacing()
+  } else {
+    removeFloatingBarSpacing()
+  }
+})
+
+// Очищаем переменную при размонтировании компонента
+onUnmounted(() => {
+  removeFloatingBarSpacing()
+})
 </script>
 
 <style scoped lang="scss">
@@ -59,7 +93,7 @@ const emit = defineEmits<{
   padding: 16px;
   pointer-events: none;
 
-    .floating-bar-content {
+      .floating-bar-content {
     max-width: 400px;
     margin: 0 auto;
     display: flex;
@@ -68,6 +102,10 @@ const emit = defineEmits<{
     padding: 16px;
     pointer-events: auto;
     transform: translateY(-20px); // Поднимаем bar на 20px выше
+
+    // Визуальное разделение от контента
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.15);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
 
     // Анимация появления
     animation: slideUp 0.3s ease-out;

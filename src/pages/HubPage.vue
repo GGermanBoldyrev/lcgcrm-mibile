@@ -255,10 +255,7 @@ const handleConfirmStatusChange = async () => {
   border: 1px solid rgba(0, 0, 0, .06);
 }
 
-/* Отступ снизу чтобы floating bar не перекрывал контент */
-.v-container {
-  padding-bottom: 140px;
-}
+/* Отступ теперь автоматически управляется компонентом FloatingActionBar */
 
 .hub-actions {
   max-width: 400px;
