@@ -43,11 +43,9 @@ interface Props {
 
 const props = defineProps<Props>()
 
-// Эмиты для Hub компонента
+// Динамические эмиты для универсального компонента
 const emit = defineEmits<{
-  reset: [payload?: any]
-  scanAgain: [payload?: any]
-  nextStatus: [payload?: any]
+  [key: string]: [payload?: any]
 }>()
 
 // Автоматическое управление отступом через CSS переменную
