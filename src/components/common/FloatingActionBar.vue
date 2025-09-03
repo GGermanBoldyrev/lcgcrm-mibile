@@ -45,9 +45,9 @@ const props = defineProps<Props>()
 
 // Эмиты для Hub компонента
 const emit = defineEmits<{
-  reset: []
-  scanAgain: []
-  nextStatus: []
+  reset: [payload?: any]
+  scanAgain: [payload?: any]
+  nextStatus: [payload?: any]
 }>()
 
 // Автоматическое управление отступом через CSS переменную
