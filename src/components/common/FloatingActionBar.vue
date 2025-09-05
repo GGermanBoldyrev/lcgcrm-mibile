@@ -87,7 +87,7 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .floating-action-bar {
   position: fixed;
-  bottom: 0;
+  bottom: -10px;
   left: 0;
   right: 0;
   z-index: 1000;
