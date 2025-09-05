@@ -3,7 +3,7 @@
     <div class="d-flex align-center mb-4">
       <v-icon color="primary" class="mr-3" size="24">mdi-camera</v-icon>
       <div>
-        <p class="text-caption text-medium-emphasis mb-0 user-select-none">Фотографии</p>
+        <p class="text-caption text-medium-emphasis mb-0 user-select-none">Копии документов</p>
         <p class="text-body-2 font-weight-medium user-select-none">{{ getPhotosCount() }} фото</p>
       </div>
     </div>

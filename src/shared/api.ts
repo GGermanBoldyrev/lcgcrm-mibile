@@ -40,3 +40,15 @@ function createApi(baseURL: string): AxiosInstance {
 }
 
 export const api = createApi(requireEnv('VITE_API_URL'))
+
+// Мок-функция для загрузки файлов (временная реализация)
+export const mockFileUpload = async (file: File): Promise<{ id: string; url: string }> => {
+  // Симулируем задержку загрузки
+  await new Promise(resolve => setTimeout(resolve, 2000))
+
+  // Возвращаем мок-данные
+  return {
+    id: `mock_file_${Date.now()}`,
+    url: URL.createObjectURL(file)
+  }
+}

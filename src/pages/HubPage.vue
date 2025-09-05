@@ -67,6 +67,14 @@ const handleConfirmStatusChange = async () => {
   })
 }
 
+// Обработчик успешной загрузки файлов
+const handleFilesUploaded = (files: any[]) => {
+  console.log('Загружено файлов:', files.length)
+  files.forEach(file => {
+    console.log(`Файл: ${file.name}, размер: ${file.size} байт`)
+  })
+}
+
 </script>
 
 <template>
@@ -84,6 +92,7 @@ const handleConfirmStatusChange = async () => {
                 :display-items="displayItems"
                 :status-changing="statusChanging"
                 :get-status-color="getStatusColor"
+                @files-uploaded="handleFilesUploaded"
               />
 
               <!-- QR SCANNER UI -->

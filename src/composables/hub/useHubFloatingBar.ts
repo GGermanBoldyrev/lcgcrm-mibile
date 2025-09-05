@@ -59,6 +59,7 @@ export function useHubFloatingBar(documentData: any, statusChanging: any) {
       },
      ])
 
+
     return rows
   })
 

@@ -51,3 +51,19 @@ export interface DisplayItem {
   value: string | null;
 }
 
+// Типы для загрузки файлов
+export interface UploadedFile {
+  id: string;
+  name: string;
+  size: number;
+  type: string;
+  url?: string;
+  uploadedAt: string;
+}
+
+export interface FileUploadResponse {
+  id: string;
+  url: string;
+  message?: string;
+}
+
