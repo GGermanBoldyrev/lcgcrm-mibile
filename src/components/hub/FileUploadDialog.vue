@@ -7,9 +7,9 @@
       </v-card-title>
 
       <v-card-text>
-        <div
+                <div
           class="upload-area mb-4"
-          :class="{ 'drag-over': isDragOver }"
+          :class="{ 'drag-over': selectionState.isDragOver }"
           @dragover.prevent="handleDragOver"
           @dragleave="handleDragLeave"
           @drop.prevent="handleDrop"
@@ -52,28 +52,28 @@
 
         <!-- Ошибка загрузки -->
         <v-alert
-          v-if="error"
+          v-if="selectionState.error"
           type="error"
           variant="tonal"
           density="compact"
           class="mb-4"
           closable
-          @click:close="error = null"
+          @click:close="selectionState.error = null"
         >
-          {{ error }}
+          {{ selectionState.error }}
         </v-alert>
 
         <!-- Список выбранных файлов -->
-        <div v-if="selectedFiles.length > 0" class="selected-files">
+        <div v-if="selectionState.selectedFiles.length > 0" class="selected-files">
           <div class="d-flex align-center justify-space-between mb-3">
             <p class="text-body-2 font-weight-medium mb-0">Выбранные файлы:</p>
             <v-chip size="small" color="primary" variant="tonal">
-              {{ selectedFiles.length }} {{ pluralizeFile(selectedFiles.length) }}
+              {{ selectionState.selectedFiles.length }} {{ pluralizeFile(selectionState.selectedFiles.length) }}
             </v-chip>
           </div>
           <div class="files-list">
             <div
-              v-for="(file, index) in selectedFiles"
+              v-for="(file, index) in selectionState.selectedFiles"
               :key="`${file.name}-${index}`"
               class="file-item mb-2"
             >
@@ -123,7 +123,7 @@
           size="large"
           @click="uploadFiles"
           :loading="uploading"
-          :disabled="selectedFiles.length === 0"
+          :disabled="selectionState.selectedFiles.length === 0"
           class="glossy upload-btn"
           style="border-radius: var(--radius-md); flex: 1; margin-left: 8px;"
         >
@@ -136,7 +136,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useFileUpload } from '@/composables/hub/useFileUpload'
+import { useFileUpload, useFileSelection } from '@/composables/hub/useFileUpload'
 
 interface Props {
   modelValue: boolean
@@ -150,21 +150,26 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
+// Используем композаблы
+const { state: uploadState, uploadFile } = useFileUpload()
 const {
-  state,
-  uploadFile,
-  isValidFileType,
-  isValidFileSize,
-  formatFileSize
-} = useFileUpload()
+  state: selectionState,
+  fileInputRef,
+  pluralizeFile,
+  handleFileSelection,
+  handleDragOver,
+  handleDragLeave,
+  handleDrop,
+  removeFile,
+  clearSelectedFiles,
+  formatFileSize,
+  getFileIcon,
+  getFileIconColor
+} = useFileSelection()
 
 const showDialog = ref(false)
-const selectedFiles = ref<File[]>([])
 const uploading = ref(false)
 const progress = ref(0)
-const error = ref<string | null>(null)
-const isDragOver = ref(false)
-const fileInputRef = ref()
 
 // Синхронизация с modelValue
 watch(() => props.modelValue, (newValue) => {
@@ -175,114 +180,22 @@ watch(showDialog, (newValue) => {
   emit('update:modelValue', newValue)
 })
 
-function pluralizeFile(count: number): string {
-  if (count === 1)  {
-    return 'файл';
-  } else if (
-    [2, 3, 4].includes(count )
-  ) {
-    return 'файла';
-  } else {
-    return 'файлов';
-  }
-}
-
-// Обработка выбора файлов
-const handleFileSelection = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  const files = Array.from(target.files || [])
-
-  if (files.length > 0) {
-    // Добавляем файлы
-    addFiles(files)
-
-    // Очищаем input для следующего выбора
-    setTimeout(() => {
-      if (fileInputRef.value) {
-        fileInputRef.value.$el.querySelector('input').value = ''
-      }
-    }, 100)
-  }
-}
-
-// Обработка drag & drop
-const handleDragOver = (event: DragEvent) => {
-  event.preventDefault()
-  isDragOver.value = true
-}
-
-const handleDragLeave = () => {
-  isDragOver.value = false
-}
-
-const handleDrop = (event: DragEvent) => {
-  event.preventDefault()
-  isDragOver.value = false
-  const files = Array.from(event.dataTransfer?.files || [])
-  addFiles(files)
-}
-
-// Добавление файлов с валидацией
-const addFiles = (newFiles: File[]) => {
-  if (newFiles.length === 0) return
-
-  // Обрабатываем каждый файл отдельно
-  for (const file of newFiles) {
-    // Проверяем, не добавлен ли уже этот файл
-    const isDuplicate = selectedFiles.value.some(existingFile =>
-      existingFile.name === file.name && existingFile.size === file.size
-    )
-
-    if (isDuplicate) {
-      error.value = `Файл "${file.name}" уже добавлен`
-      continue
-    }
-
-    // Проверяем тип файла
-    if (!isValidFileType(file)) {
-      error.value = `Неподдерживаемый тип файла: ${file.type}`
-      continue
-    }
-
-    // Добавляем файл к списку
-    selectedFiles.value.push(file)
-    error.value = null
-  }
-}
-
-// Удаление файла из списка
-const removeFile = (index: number) => {
-  selectedFiles.value.splice(index, 1)
-}
-
 // Загрузка файлов
 const uploadFiles = async () => {
-  if (selectedFiles.value.length === 0) return
+  if (selectionState.selectedFiles.length === 0) return
 
   uploading.value = true
-  error.value = null
+  selectionState.error = null
   progress.value = 0
 
   const uploadedFiles = []
 
   try {
-    for (let i = 0; i < selectedFiles.value.length; i++) {
-      const file = selectedFiles.value[i]
-
-      // Проверяем тип файла
-      if (!isValidFileType(file)) {
-        error.value = `Неподдерживаемый тип файла: ${file.type}`
-        continue
-      }
-
-      // Проверяем размер файла
-      if (!isValidFileSize(file)) {
-        error.value = `Файл слишком большой: ${formatFileSize(file.size)}. Максимальный размер: 10MB`
-        continue
-      }
+    for (let i = 0; i < selectionState.selectedFiles.length; i++) {
+      const file = selectionState.selectedFiles[i]
 
       // Симулируем прогресс
-      const fileProgress = (i / selectedFiles.value.length) * 100
+      const fileProgress = (i / selectionState.selectedFiles.length) * 100
       progress.value = fileProgress
 
       try {
@@ -290,7 +203,7 @@ const uploadFiles = async () => {
         uploadedFiles.push(uploadedFile)
       } catch (uploadError) {
         console.error('Ошибка загрузки файла:', uploadError)
-        error.value = `Ошибка загрузки файла: ${file.name}`
+        selectionState.error = `Ошибка загрузки файла: ${file.name}`
       }
     }
 
@@ -309,39 +222,9 @@ const uploadFiles = async () => {
 // Закрытие диалога
 const closeDialog = () => {
   showDialog.value = false
-  selectedFiles.value = []
-  error.value = null
   uploading.value = false
   progress.value = 0
-  isDragOver.value = false
-
-  // Очищаем input
-  if (fileInputRef.value) {
-    setTimeout(() => {
-      const input = fileInputRef.value.$el.querySelector('input')
-      if (input) {
-        input.value = ''
-      }
-    }, 100)
-  }
-}
-
-// Получение иконки для типа файла
-const getFileIcon = (fileType: string): string => {
-  if (fileType.startsWith('image/')) return 'mdi-image'
-  if (fileType === 'application/pdf') return 'mdi-file-pdf-box'
-  if (fileType.includes('word')) return 'mdi-file-word-box'
-  if (fileType === 'text/plain') return 'mdi-file-document-outline'
-  return 'mdi-file'
-}
-
-// Получение цвета иконки для типа файла
-const getFileIconColor = (fileType: string): string => {
-  if (fileType.startsWith('image/')) return 'success'
-  if (fileType === 'application/pdf') return 'error'
-  if (fileType.includes('word')) return 'primary'
-  if (fileType === 'text/plain') return 'info'
-  return 'grey'
+  clearSelectedFiles()
 }
 </script>
 
