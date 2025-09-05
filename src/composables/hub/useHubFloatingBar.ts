@@ -45,7 +45,7 @@ export function useHubFloatingBar(documentData: any, statusChanging: any) {
           size: 'large',
           'prepend-icon': 'mdi-magnify',
         },
-        style: 'font-size: 14px; border-radius: var(--radius-md);',
+        style: 'font-size: 13px; border-radius: var(--radius-md);',
       },
              {
         text: 'Сканировать',
@@ -55,7 +55,7 @@ export function useHubFloatingBar(documentData: any, statusChanging: any) {
           size: 'large',
           'prepend-icon': 'mdi-qrcode-scan',
         },
-        style: 'font-size: 14px; border-radius: var(--radius-md);',
+        style: 'font-size: 13px; border-radius: var(--radius-md);',
       },
      ])
 
