@@ -96,7 +96,7 @@ const handleFilesUploaded = (files: any[]) => {
         size="large"
         prepend-icon="mdi-cloud-upload"
         @click="handleUploadFiles"
-        class="upload-btn"
+        class="upload-btn glossy"
       >
         Загрузить файлы
       </v-btn>

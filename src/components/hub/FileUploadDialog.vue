@@ -7,12 +7,18 @@
       </v-card-title>
 
       <v-card-text>
-        <div class="upload-area mb-4">
+        <div
+          class="upload-area mb-4"
+          :class="{ 'drag-over': isDragOver }"
+          @dragover.prevent="handleDragOver"
+          @dragleave="handleDragLeave"
+          @drop.prevent="handleDrop"
+        >
           <v-file-input
-            v-model="selectedFiles"
+            ref="fileInputRef"
             multiple
-            accept="image/*,.pdf,.doc,.docx,.txt"
-            placeholder="Выберите файлы для загрузки"
+            accept="image/*,.pdf"
+            placeholder="Выберите файлы или перетащите их сюда"
             prepend-icon="mdi-attachment"
             variant="outlined"
             density="comfortable"
@@ -20,6 +26,14 @@
             @change="handleFileSelection"
             class="file-input"
           />
+          <div class="upload-hint mt-2">
+            <p class="text-caption text-center text-medium-emphasis">
+              Поддерживаются: изображения, PDF, Word документы, текстовые файлы
+            </p>
+            <p class="text-caption text-center text-medium-emphasis">
+              Максимум 10 файлов, до 10MB каждый
+            </p>
+          </div>
         </div>
 
         <!-- Прогресс загрузки -->
@@ -51,35 +65,42 @@
 
         <!-- Список выбранных файлов -->
         <div v-if="selectedFiles.length > 0" class="selected-files">
-          <p class="text-body-2 font-weight-medium mb-2">Выбранные файлы:</p>
-          <div
-            v-for="(file, index) in selectedFiles"
-            :key="index"
-            class="file-item mb-2"
-          >
-            <div class="d-flex align-center">
-              <v-icon
-                :color="getFileIconColor(file.type)"
-                size="20"
-                class="mr-2"
-              >
-                {{ getFileIcon(file.type) }}
-              </v-icon>
-              <div class="flex-grow-1">
-                <p class="text-body-2 mb-0">{{ file.name }}</p>
-                <p class="text-caption text-medium-emphasis mb-0">
-                  {{ formatFileSize(file.size) }}
-                </p>
+          <div class="d-flex align-center justify-space-between mb-3">
+            <p class="text-body-2 font-weight-medium mb-0">Выбранные файлы:</p>
+            <v-chip size="small" color="primary" variant="tonal">
+              {{ selectedFiles.length }} {{ pluralizeFile(selectedFiles.length) }}
+            </v-chip>
+          </div>
+          <div class="files-list">
+            <div
+              v-for="(file, index) in selectedFiles"
+              :key="`${file.name}-${index}`"
+              class="file-item mb-2"
+            >
+              <div class="d-flex align-center">
+                <v-icon
+                  :color="getFileIconColor(file.type)"
+                  size="20"
+                  class="mr-2"
+                >
+                  {{ getFileIcon(file.type) }}
+                </v-icon>
+                <div class="flex-grow-1">
+                  <p class="text-body-2 mb-0">{{ file.name }}</p>
+                  <p class="text-caption text-medium-emphasis mb-0">
+                    {{ formatFileSize(file.size) }}
+                  </p>
+                </div>
+                <v-btn
+                  icon
+                  size="small"
+                  variant="text"
+                  color="error"
+                  @click="removeFile(index)"
+                >
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
               </div>
-              <v-btn
-                icon
-                size="small"
-                variant="text"
-                color="error"
-                @click="removeFile(index)"
-              >
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
             </div>
           </div>
         </div>
@@ -142,6 +163,8 @@ const selectedFiles = ref<File[]>([])
 const uploading = ref(false)
 const progress = ref(0)
 const error = ref<string | null>(null)
+const isDragOver = ref(false)
+const fileInputRef = ref()
 
 // Синхронизация с modelValue
 watch(() => props.modelValue, (newValue) => {
@@ -152,12 +175,79 @@ watch(showDialog, (newValue) => {
   emit('update:modelValue', newValue)
 })
 
+function pluralizeFile(count: number): string {
+  if (count === 1)  {
+    return 'файл';
+  } else if (
+    [2, 3, 4].includes(count )
+  ) {
+    return 'файла';
+  } else {
+    return 'файлов';
+  }
+}
+
 // Обработка выбора файлов
 const handleFileSelection = (event: Event) => {
   const target = event.target as HTMLInputElement
   const files = Array.from(target.files || [])
-  selectedFiles.value = files
-  error.value = null
+
+  if (files.length > 0) {
+    // Добавляем файлы
+    addFiles(files)
+
+    // Очищаем input для следующего выбора
+    setTimeout(() => {
+      if (fileInputRef.value) {
+        fileInputRef.value.$el.querySelector('input').value = ''
+      }
+    }, 100)
+  }
+}
+
+// Обработка drag & drop
+const handleDragOver = (event: DragEvent) => {
+  event.preventDefault()
+  isDragOver.value = true
+}
+
+const handleDragLeave = () => {
+  isDragOver.value = false
+}
+
+const handleDrop = (event: DragEvent) => {
+  event.preventDefault()
+  isDragOver.value = false
+  const files = Array.from(event.dataTransfer?.files || [])
+  addFiles(files)
+}
+
+// Добавление файлов с валидацией
+const addFiles = (newFiles: File[]) => {
+  if (newFiles.length === 0) return
+
+  // Обрабатываем каждый файл отдельно
+  for (const file of newFiles) {
+    // Проверяем, не добавлен ли уже этот файл
+    const isDuplicate = selectedFiles.value.some(existingFile =>
+      existingFile.name === file.name && existingFile.size === file.size
+    )
+
+    if (isDuplicate) {
+      error.value = `Файл "${file.name}" уже добавлен`
+      continue
+    }
+
+    // Проверяем тип файла
+    if (!isValidFileType(file)) {
+      error.value = `Неподдерживаемый тип файла: ${file.type}`
+      continue
+    }
+
+    // Добавляем файл к списку
+    selectedFiles.value.push(file)
+    error.value = null
+  }
 }
 
 // Удаление файла из списка
@@ -223,6 +313,17 @@ const closeDialog = () => {
   error.value = null
   uploading.value = false
   progress.value = 0
+  isDragOver.value = false
+
+  // Очищаем input
+  if (fileInputRef.value) {
+    setTimeout(() => {
+      const input = fileInputRef.value.$el.querySelector('input')
+      if (input) {
+        input.value = ''
+      }
+    }, 100)
+  }
 }
 
 // Получение иконки для типа файла
@@ -245,15 +346,32 @@ const getFileIconColor = (fileType: string): string => {
 </script>
 
 <style scoped>
+.v-card {
+  padding: 12px 6px;
+  border-radius: var(--radius-md) !important;
+}
+
 .upload-area {
   border: 2px dashed rgba(var(--v-theme-primary), 0.3);
   border-radius: var(--radius-md);
   padding: 16px;
-  transition: border-color 0.2s ease;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 .upload-area:hover {
   border-color: rgba(var(--v-theme-primary), 0.6);
+  background: rgba(var(--v-theme-primary), 0.02);
+}
+
+.upload-area.drag-over {
+  border-color: rgba(var(--v-theme-primary), 0.8);
+  background: rgba(var(--v-theme-primary), 0.05);
+  transform: scale(1.02);
+}
+
+.upload-hint {
+  opacity: 0.7;
 }
 
 .file-input {
@@ -265,15 +383,30 @@ const getFileIconColor = (fileType: string): string => {
 }
 
 .selected-files {
-  max-height: 200px;
+  margin-top: 16px;
+}
+
+.files-list {
+  max-height: 250px;
   overflow-y: auto;
+  padding-right: 4px;
 }
 
 .file-item {
-  padding: 8px;
+  padding: 12px;
   background: rgba(var(--v-theme-surface), 0.5);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   border: 1px solid rgba(var(--v-theme-outline), 0.2);
+  transition: all 0.2s ease;
+}
+
+.file-item:hover {
+  background: rgba(var(--v-theme-surface), 0.7);
+  border-color: rgba(var(--v-theme-primary), 0.3);
+}
+
+.file-item:last-child {
+  margin-bottom: 0;
 }
 
 /* Стили кнопок в стиле приложения */
