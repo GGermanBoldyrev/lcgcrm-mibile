@@ -79,7 +79,13 @@
         </v-toolbar>
 
         <!-- Image container -->
-        <div class="photo-fullscreen-container" @click="closeFullscreen">
+        <div
+          class="photo-fullscreen-container"
+          @click="closeFullscreen"
+          @touchstart="handleTouchStart"
+          @touchmove="handleTouchMove"
+          @touchend="handleTouchEnd"
+        >
           <div class="photo-fullscreen-content" @click.stop>
             <v-img
               v-if="getCurrentImageSrc()"
@@ -137,6 +143,11 @@
               <v-icon size="8">mdi-circle</v-icon>
             </v-btn>
           </div>
+
+          <!-- Swipe подсказка только для десктопа -->
+          <div v-if="hasNavigation() && !isSwipeInProgress" class="swipe-hint d-none d-sm-block">
+            <p class="text-caption text-center">Свайпайте влево или вправо для навигации</p>
+          </div>
         </div>
       </v-card>
     </v-dialog>
@@ -172,7 +183,13 @@ const {
   canGoNext,
   getPhotosCount,
   getCurrentPhotoNumber,
-  hasPhotos
+  hasPhotos,
+  handleTouchStart,
+  handleTouchMove,
+  handleTouchEnd,
+  isSwipeEnabled,
+  isSwipeInProgress,
+  swipeDirection
 } = useDocumentPhotoGallery(props.copies)
 </script>
 
@@ -274,6 +291,7 @@ const {
   justify-content: center;
   overflow: hidden;
   background: black;
+  touch-action: pan-y; /* Разрешаем только вертикальные жесты для zoom */
 }
 
 .photo-fullscreen-content {
@@ -321,6 +339,20 @@ const {
   left: 0;
   right: 0;
   z-index: 2;
+}
+
+.swipe-hint {
+  position: absolute;
+  bottom: -30px;
+  left: 0;
+  right: 0;
+  opacity: 0.7;
+  animation: fadeInOut 3s ease-in-out infinite;
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
 }
 
 /* Responsive для мобильных устройств */

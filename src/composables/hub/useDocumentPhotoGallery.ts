@@ -1,4 +1,4 @@
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import type { DocumentCopy } from '@/types/hub'
 import { api } from '@/shared/api'
 
@@ -11,6 +11,20 @@ export function useDocumentPhotoGallery(copies: DocumentCopy[] | null) {
   // Состояние полноэкранного просмотра
   const showFullscreen = ref(false)
   const currentPhotoIndex = ref(0)
+
+  // Управление историей браузера для Android back button
+  const PHOTO_GALLERY_STATE = 'photo-gallery-open'
+  let isHistoryPushed = false
+
+  // Touch события для swipe навигации
+  const touchStartX = ref(0)
+  const touchStartY = ref(0)
+  const touchEndX = ref(0)
+  const touchEndY = ref(0)
+  const isSwipeEnabled = ref(true)
+  const isSwipeInProgress = ref(false)
+  const swipeDirection = ref<'left' | 'right' | null>(null)
+  const SWIPE_THRESHOLD = 50 // Минимальное расстояние для swipe
 
   // Функция для загрузки изображения с токеном
   const loadImageWithToken = async (photoPath: string): Promise<string> => {
@@ -68,14 +82,42 @@ export function useDocumentPhotoGallery(copies: DocumentCopy[] | null) {
     return errorImages.value.has(photoPath)
   }
 
+  // Функция для программного закрытия без изменения истории
+  const closeFullscreenProgrammatically = () => {
+    showFullscreen.value = false
+    isHistoryPushed = false
+  }
+
+  // Обработчик события popstate (кнопка назад)
+  const handlePopState = (event: PopStateEvent) => {
+    // Если галерея открыта и произошел переход назад
+    if (showFullscreen.value && isHistoryPushed) {
+      // Закрываем галерею программно (без изменения истории)
+      closeFullscreenProgrammatically()
+    }
+  }
+
   // Функции полноэкранного просмотра
   const openFullscreen = (index: number) => {
     currentPhotoIndex.value = index
     showFullscreen.value = true
+
+    // Добавляем состояние в историю для Android back button
+    if (!isHistoryPushed) {
+      window.history.pushState(PHOTO_GALLERY_STATE, '', window.location.href)
+      isHistoryPushed = true
+    }
   }
 
   const closeFullscreen = () => {
-    showFullscreen.value = false
+    if (isHistoryPushed) {
+      // Если состояние добавлено в историю, используем history.back()
+      // Это автоматически вызовет handlePopState
+      window.history.back()
+    } else {
+      // Если состояния в истории нет, просто закрываем
+      showFullscreen.value = false
+    }
   }
 
   const nextPhoto = () => {
@@ -108,6 +150,66 @@ export function useDocumentPhotoGallery(copies: DocumentCopy[] | null) {
       link.href = imageSrc
       link.download = `photo-${currentPhotoIndex.value + 1}.jpg`
       link.click()
+    }
+  }
+
+  // Touch события для swipe навигации
+  const handleTouchStart = (event: TouchEvent) => {
+    if (!isSwipeEnabled.value || !showFullscreen.value) return
+
+    const touch = event.touches[0]
+    touchStartX.value = touch.clientX
+    touchStartY.value = touch.clientY
+    isSwipeInProgress.value = true
+    swipeDirection.value = null
+  }
+
+  const handleTouchMove = (event: TouchEvent) => {
+    if (!isSwipeEnabled.value || !showFullscreen.value || !isSwipeInProgress.value) return
+
+    const touch = event.touches[0]
+    const deltaX = touch.clientX - touchStartX.value
+    const deltaY = touch.clientY - touchStartY.value
+
+    // Определяем направление swipe
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 20) {
+      // Предотвращаем скролл только при горизонтальном swipe
+      event.preventDefault()
+      swipeDirection.value = deltaX > 0 ? 'right' : 'left'
+    }
+  }
+
+  const handleTouchEnd = (event: TouchEvent) => {
+    if (!isSwipeEnabled.value || !showFullscreen.value) return
+
+    const touch = event.changedTouches[0]
+    touchEndX.value = touch.clientX
+    touchEndY.value = touch.clientY
+
+    handleSwipeGesture()
+
+    // Сбрасываем состояние swipe
+    isSwipeInProgress.value = false
+    swipeDirection.value = null
+  }
+
+  const handleSwipeGesture = () => {
+    const deltaX = touchEndX.value - touchStartX.value
+    const deltaY = touchEndY.value - touchStartY.value
+
+    // Проверяем, что это горизонтальный swipe (а не вертикальный)
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > SWIPE_THRESHOLD) {
+      if (deltaX > 0) {
+        // Swipe вправо - предыдущее фото
+        if (canGoPrevious()) {
+          previousPhoto()
+        }
+      } else {
+        // Swipe влево - следующее фото
+        if (canGoNext()) {
+          nextPhoto()
+        }
+      }
     }
   }
 
@@ -150,11 +252,21 @@ export function useDocumentPhotoGallery(copies: DocumentCopy[] | null) {
   // Инициализация при монтировании
   onMounted(() => {
     loadAllImages()
+    // Подписываемся на событие popstate для обработки кнопки назад
+    window.addEventListener('popstate', handlePopState)
   })
 
   // Очистка при размонтировании
   onUnmounted(() => {
     cleanup()
+    // Отписываемся от события popstate
+    window.removeEventListener('popstate', handlePopState)
+
+    // Очищаем историю если галерея была открыта
+    if (isHistoryPushed && showFullscreen.value) {
+      // Программно закрываем без вызова history.back() для избежания проблем
+      closeFullscreenProgrammatically()
+    }
   })
 
   return {
@@ -192,6 +304,14 @@ export function useDocumentPhotoGallery(copies: DocumentCopy[] | null) {
     getPhotosCount,
     getCurrentPhotoNumber,
     hasPhotos,
+
+    // Touch события
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+    isSwipeEnabled,
+    isSwipeInProgress,
+    swipeDirection,
 
     // Очистка
     cleanup
