@@ -39,6 +39,9 @@ export function useHubSearch() {
     try {
       // Ожидаем, что сам `response.data` будет типа DocumentData
       const response = await api.get<DocumentData>(`${endpoint}?code=${code}`);
+
+      console.log(response);
+
       // Присваиваем данные напрямую от сервера
       state.data = response.data;
     } catch (e: any) {

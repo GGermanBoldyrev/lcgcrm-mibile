@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { DocumentData, DisplayItem } from '@/types/hub'
+import DocumentPhotoGallery from './DocumentPhotoGallery.vue'
 
 interface Props {
   documentData: DocumentData
@@ -67,6 +68,8 @@ defineEmits<Emits>()
       </div>
     </div>
 
+    <!-- Photo Gallery Component -->
+    <DocumentPhotoGallery :copies="documentData.copies" />
 
   </div>
 </template>

@@ -43,8 +43,11 @@ interface Props {
 
 const props = defineProps<Props>()
 
-// Динамические эмиты для универсального компонента
+// Эмиты для универсального компонента
 const emit = defineEmits<{
+  reset: [payload?: any]
+  scanAgain: [payload?: any]
+  nextStatus: [payload?: any]
   [key: string]: [payload?: any]
 }>()
 

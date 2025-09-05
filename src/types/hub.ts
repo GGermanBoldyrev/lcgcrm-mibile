@@ -24,11 +24,24 @@ export interface DocumentAddress {
   contact: string | null;
 }
 
+export interface DocumentCopy {
+  url: string;
+}
+
 export interface DocumentMeta {
   createdAt: string; // ISO-строка даты
   express: boolean;
-  photos: null;
   documentId: string;
+}
+
+export interface DocumentData {
+  documentId: string;
+  meta: DocumentMeta;
+  info: DocumentInfo;
+  address: DocumentAddress;
+  status: DocumentStatus;
+  shippingFlags: ShippingFlags;
+  copies: DocumentCopy[] | null;
 }
 
 // Элемент для отображения в UI
@@ -38,12 +51,3 @@ export interface DisplayItem {
   value: string | null;
 }
 
-// Главный интерфейс для всего документа
-export interface DocumentData {
-  documentId: string;
-  meta: DocumentMeta;
-  info: DocumentInfo;
-  address: DocumentAddress;
-  status: DocumentStatus;
-  shippingFlags: ShippingFlags;
-}
