@@ -37,7 +37,7 @@ const {
 const handleSearchSuccess = () => {
   if (documentData.value) {
     router.push({
-      name: 'Document',
+      name: 'HubDocument',
       params: { documentId: documentData.value.documentId }
     })
   }

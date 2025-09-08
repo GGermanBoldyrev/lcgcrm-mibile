@@ -76,7 +76,7 @@ watch(() => documentId.value, async (newDocumentId) => {
 watch(() => error.value, (newError) => {
   if (newError && errorType.value === 'error') {
     setTimeout(() => {
-      router.push({ name: 'Search' })
+      router.push({ name: 'HubSearch' })
     }, 2000)
   }
 })
@@ -103,7 +103,7 @@ watch(() => error.value, (newError) => {
                 <p class="text-body-1 mb-4">{{ error }}</p>
                 <v-btn
                   color="primary"
-                  @click="router.push({ name: 'Search' })"
+                  @click="router.push({ name: 'HubSearch' })"
                 >
                   Вернуться к поиску
                 </v-btn>
@@ -138,7 +138,7 @@ watch(() => error.value, (newError) => {
       :visible="!!documentData"
       :button-rows="buttonRows"
       @reset="handleReset"
-      @scanAgain="router.push({ name: 'Search' })"
+      @scanAgain="router.push({ name: 'HubSearch' })"
       @nextStatus="handleNextStatus"
     />
   </v-main>

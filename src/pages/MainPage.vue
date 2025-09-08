@@ -7,14 +7,14 @@ const router = useRouter()
 
 const openQrScanner = async () => {
   // Переходим на Hub страницу и открываем QR-сканер
-  await router.push({ name: 'hub', query: { openQR: 'true' } })
+  await router.push({ name: 'HubSearch', query: { openQR: 'true' } })
 }
 
 const quickActions: QuickAction[] = [
   {
     label: 'Канцелярия',
     icon: 'mdi-file-document-outline',
-    to: { name: 'hub' },
+    to: { name: 'HubSearch' },
     secondaryCard: {
       icon: 'mdi-qrcode-scan',
       onClick: openQrScanner

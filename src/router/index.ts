@@ -9,18 +9,17 @@ const routes = [
   },
   {
     path: '/hub',
-    name: 'hub',
-    component: () => import('@/pages/HubPage.vue')
+    redirect: '/hub/search'
   },
   {
-    path: '/search',
-    name: 'Search',
-    component: () => import('@/pages/SearchPage.vue')
+    path: '/hub/search',
+    name: 'HubSearch',
+    component: () => import('@/pages/hub/SearchPage.vue')
   },
   {
-    path: '/document/:documentId',
-    name: 'Document',
-    component: () => import('@/pages/DocumentPage.vue')
+    path: '/hub/document/:documentId',
+    name: 'HubDocument',
+    component: () => import('@/pages/hub/DocumentPage.vue')
   },
   {
     path: '/profile',
