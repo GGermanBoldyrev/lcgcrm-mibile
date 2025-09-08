@@ -17,59 +17,57 @@ export function useFileUpload() {
     progress: 0
   })
 
-  // Мок-функция для загрузки файла
-  const uploadFile = async (file: File): Promise<UploadedFile> => {
+  // Загрузка файлов на сервер
+  const uploadFiles = async (files: File[], documentId: string, userId: number): Promise<void> => {
     state.uploading = true
     state.error = null
     state.progress = 0
 
     try {
-      // Симуляция прогресса загрузки
-      const progressInterval = setInterval(() => {
-        if (state.progress < 90) {
-          state.progress += Math.random() * 20
-        }
-      }, 200)
-
       // Создаем FormData для загрузки
       const formData = new FormData()
-      formData.append('file', file)
 
-      // Мок-запрос (в реальном приложении здесь будет настоящий API)
-      const mockResponse = await new Promise<UploadedFile>((resolve) => {
-        setTimeout(() => {
-          clearInterval(progressInterval)
-          state.progress = 100
+      // Добавляем documentId
+      formData.append('documentId', documentId)
 
-          resolve({
-            id: `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            url: URL.createObjectURL(file), // Для демонстрации создаем локальный URL
-            uploadedAt: new Date().toISOString()
-          })
-        }, 2000) // Симулируем загрузку в течение 2 секунд
+      // Добавляем userId
+      formData.append('userId', userId.toString())
+
+      // Добавляем файлы
+      files.forEach(file => {
+        formData.append('files', file)
       })
 
-      // В реальном приложении здесь будет:
-      // const response = await api.post('/mobile/hub/document/upload', formData, {
-      //   headers: { 'Content-Type': 'multipart/form-data' },
-      //   onUploadProgress: (progressEvent) => {
-      //     state.progress = Math.round((progressEvent.loaded * 100) / progressEvent.total!)
-      //   }
-      // })
+      // Отправляем POST запрос
+      await api.post('/mobile/hub/copy', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            state.progress = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+          }
+        }
+      })
 
-      state.files.push(mockResponse)
       state.uploading = false
       state.progress = 0
-
-      return mockResponse
     } catch (error: any) {
       state.uploading = false
       state.progress = 0
-      state.error = error.message || 'Ошибка загрузки файла'
+      state.error = error.response?.data?.message || error.message || 'Ошибка загрузки файлов'
       throw error
+    }
+  }
+
+  // Мок-функция для загрузки файла (для обратной совместимости)
+  const uploadFile = async (file: File): Promise<UploadedFile> => {
+    await uploadFiles([file], 'mock-document-id', 1)
+    return {
+      id: `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      url: URL.createObjectURL(file),
+      uploadedAt: new Date().toISOString()
     }
   }
 
@@ -128,6 +126,7 @@ export function useFileUpload() {
 
   return {
     state,
+    uploadFiles,
     uploadFile,
     removeFile,
     clearFiles,

@@ -121,7 +121,7 @@
         <v-btn
           color="primary"
           size="large"
-          @click="uploadFiles"
+          @click="handleUploadFiles"
           :loading="uploading"
           :disabled="selectionState.selectedFiles.length === 0"
           class="glossy upload-btn"
@@ -140,6 +140,8 @@ import { useFileUpload, useFileSelection } from '@/composables/hub/useFileUpload
 
 interface Props {
   modelValue: boolean
+  documentId: string
+  userId: number
 }
 
 interface Emits {
@@ -151,7 +153,7 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 // Используем композаблы
-const { state: uploadState, uploadFile } = useFileUpload()
+const { state: uploadState, uploadFiles } = useFileUpload()
 const {
   state: selectionState,
   fileInputRef,
@@ -181,38 +183,23 @@ watch(showDialog, (newValue) => {
 })
 
 // Загрузка файлов
-const uploadFiles = async () => {
+const handleUploadFiles = async () => {
   if (selectionState.selectedFiles.length === 0) return
 
   uploading.value = true
   selectionState.error = null
   progress.value = 0
 
-  const uploadedFiles = []
-
   try {
-    for (let i = 0; i < selectionState.selectedFiles.length; i++) {
-      const file = selectionState.selectedFiles[i]
+    // Отправляем файлы на сервер
+    await uploadFiles(selectionState.selectedFiles, props.documentId, props.userId)
 
-      // Симулируем прогресс
-      const fileProgress = (i / selectionState.selectedFiles.length) * 100
-      progress.value = fileProgress
-
-      try {
-        const uploadedFile = await uploadFile(file)
-        uploadedFiles.push(uploadedFile)
-      } catch (uploadError) {
-        console.error('Ошибка загрузки файла:', uploadError)
-        selectionState.error = `Ошибка загрузки файла: ${file.name}`
-      }
-    }
-
-    progress.value = 100
-
-    if (uploadedFiles.length > 0) {
-      emit('uploaded', uploadedFiles)
-      closeDialog()
-    }
+    // Уведомляем о успешной загрузке
+    emit('uploaded', selectionState.selectedFiles)
+    closeDialog()
+  } catch (error: any) {
+    console.error('Ошибка загрузки файлов:', error)
+    selectionState.error = error.response?.data?.message || error.message || 'Ошибка загрузки файлов'
   } finally {
     uploading.value = false
     progress.value = 0

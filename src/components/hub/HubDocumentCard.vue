@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import type { DocumentData, DisplayItem } from '@/types/hub'
 import DocumentPhotoGallery from './DocumentPhotoGallery.vue'
 import FileUploadDialog from './FileUploadDialog.vue'
+import { useAuthStore } from '@/stores/auth'
 
 interface Props {
   documentData: DocumentData
@@ -17,6 +18,9 @@ interface Emits {
 
 defineProps<Props>()
 const emit = defineEmits<Emits>()
+
+// Получаем userId из стейта
+const authStore = useAuthStore()
 
 // Состояние диалога загрузки файлов
 const showFileUploadDialog = ref(false)
@@ -105,6 +109,8 @@ const handleFilesUploaded = (files: any[]) => {
     <!-- File Upload Dialog -->
     <FileUploadDialog
       v-model="showFileUploadDialog"
+      :document-id="String(documentData.documentId)"
+      :user-id="authStore.user?.id || 0"
       @uploaded="handleFilesUploaded"
     />
 

@@ -31,11 +31,11 @@ export interface DocumentCopy {
 export interface DocumentMeta {
   createdAt: string; // ISO-строка даты
   express: boolean;
-  documentId: string;
+  documentId: string | number;
 }
 
 export interface DocumentData {
-  documentId: string;
+  documentId: string | number;
   meta: DocumentMeta;
   info: DocumentInfo;
   address: DocumentAddress;
