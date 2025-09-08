@@ -13,6 +13,16 @@ const routes = [
     component: () => import('@/pages/HubPage.vue')
   },
   {
+    path: '/search',
+    name: 'Search',
+    component: () => import('@/pages/SearchPage.vue')
+  },
+  {
+    path: '/document/:documentId',
+    name: 'Document',
+    component: () => import('@/pages/DocumentPage.vue')
+  },
+  {
     path: '/profile',
     name: 'profile',
     component: () => import('@/pages/ProfilePage.vue')
