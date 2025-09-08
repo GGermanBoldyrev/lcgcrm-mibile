@@ -10,7 +10,7 @@ import emailIcon from '@/assets/images/icons/hub/shippingStatuses/email.png'
 import gavelIcon from '@/assets/images/icons/hub/shippingStatuses/gavel.svg'
 import gavelbIcon from '@/assets/images/icons/hub/shippingStatuses/gavelb.svg'
 
-export function useHubUI() {
+export function useHubUI(searchCardRef?: any) {
   const route = useRoute()
   const showSearch = ref(false)
   const searchField = ref()
@@ -51,7 +51,9 @@ export function useHubUI() {
     if (!showSearch.value) {
       showSearch.value = true
       await nextTick()
-      searchField.value?.$el?.querySelector('input')?.focus()
+      // Используем ссылку на SearchCard если доступна
+      const fieldRef = searchCardRef?.value?.searchField || searchField.value
+      fieldRef?.$el?.querySelector('input')?.focus()
       return
     }
     await searchById(searchId.value.trim())
@@ -66,7 +68,9 @@ export function useHubUI() {
     // Показываем поле поиска и ставим фокус
     showSearch.value = true
     await nextTick()
-    searchField.value?.$el?.querySelector('input')?.focus()
+    // Используем ссылку на SearchCard если доступна
+    const fieldRef = searchCardRef?.value?.searchField || searchField.value
+    fieldRef?.$el?.querySelector('input')?.focus()
   }
 
   // QR Scanner functions

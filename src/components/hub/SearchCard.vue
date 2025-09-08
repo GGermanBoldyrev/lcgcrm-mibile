@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, defineProps, defineEmits } from 'vue'
+import { ref, computed, defineProps, defineEmits, watch, nextTick } from 'vue'
 import BaseOutlinedTextField from '@/components/base/BaseOutlinedTextField.vue'
 
 const props = defineProps<{
@@ -39,6 +39,14 @@ const handleFindClick = () => {
 const handleQrClick = () => {
   emit('open-qr')
 }
+
+// Автоматически устанавливаем фокус когда показывается поле поиска
+watch(() => props.showSearch, async (newValue) => {
+  if (newValue) {
+    await nextTick()
+    searchField.value?.$el?.querySelector('input')?.focus()
+  }
+}, { immediate: true })
 
 defineExpose({
   searchField,

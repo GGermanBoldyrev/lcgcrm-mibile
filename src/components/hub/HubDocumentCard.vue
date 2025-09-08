@@ -110,7 +110,7 @@ const handleFilesUploaded = (files: any[]) => {
     <FileUploadDialog
       v-model="showFileUploadDialog"
       :document-id="String(documentData.documentId)"
-      :user-id="authStore.user?.id || 0"
+      :user-id="Number(authStore.user?.id) || 0"
       @uploaded="handleFilesUploaded"
     />
 

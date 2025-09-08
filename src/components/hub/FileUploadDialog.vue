@@ -28,10 +28,7 @@
           />
           <div class="upload-hint mt-2">
             <p class="text-caption text-center text-medium-emphasis">
-              Поддерживаются: изображения, PDF, Word документы, текстовые файлы
-            </p>
-            <p class="text-caption text-center text-medium-emphasis">
-              Максимум 10 файлов, до 10MB каждый
+              Загрузите файлы
             </p>
           </div>
         </div>
