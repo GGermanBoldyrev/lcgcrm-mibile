@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { DocumentData, DisplayItem } from '@/types/hub'
+import type { DocumentData, DisplayItem, UploadedFile } from '@/types/hub'
 import DocumentPhotoGallery from './DocumentPhotoGallery.vue'
 import FileUploadDialog from './FileUploadDialog.vue'
 import { useAuthStore } from '@/stores/auth'
@@ -25,14 +25,53 @@ const authStore = useAuthStore()
 // Состояние диалога загрузки файлов
 const showFileUploadDialog = ref(false)
 
+// Загруженные файлы
+const uploadedFiles = ref<UploadedFile[]>([])
+
 // Обработчик загрузки файлов
 const handleUploadFiles = () => {
   showFileUploadDialog.value = true
 }
 
 // Обработчик успешной загрузки файлов
-const handleFilesUploaded = (files: any[]) => {
+const handleFilesUploaded = (files: UploadedFile[]) => {
+  // Добавляем новые файлы к существующим
+  uploadedFiles.value.push(...files)
   emit('filesUploaded', files)
+}
+
+// Функции для работы с файлами
+const isImage = (type: string) => {
+  return type.startsWith('image/')
+}
+
+const getFileIcon = (type: string) => {
+  if (type.startsWith('image/')) return 'mdi-image'
+  if (type.includes('pdf')) return 'mdi-file-pdf-box'
+  if (type.includes('word') || type.includes('document')) return 'mdi-file-word-box'
+  if (type.includes('text')) return 'mdi-file-document'
+  return 'mdi-file'
+}
+
+const getFileIconColor = (type: string) => {
+  if (type.startsWith('image/')) return 'orange'
+  if (type.includes('pdf')) return 'red'
+  if (type.includes('word') || type.includes('document')) return 'blue'
+  if (type.includes('text')) return 'green'
+  return 'grey'
+}
+
+const formatFileSize = (bytes: number) => {
+  if (bytes === 0) return '0 Bytes'
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+}
+
+const openImagePreview = (url: string, name: string) => {
+  // Открываем изображение в новом окне/вкладке
+  window.open(url, '_blank')
 }
 </script>
 
@@ -91,6 +130,59 @@ const handleFilesUploaded = (files: any[]) => {
     <!-- Photo Gallery Component -->
     <DocumentPhotoGallery :copies="documentData.copies" />
 
+    <!-- Uploaded Files Section -->
+    <div v-if="uploadedFiles.length > 0" class="uploaded-files-section mt-6">
+      <div class="d-flex align-center mb-3">
+        <v-icon color="success" class="mr-3" size="24">mdi-check-circle</v-icon>
+        <div>
+          <p class="text-caption text-medium-emphasis mb-0">Загруженные файлы</p>
+          <p class="text-body-2 font-weight-medium mb-0">{{ uploadedFiles.length }} файл(ов)</p>
+        </div>
+      </div>
+      <div class="uploaded-files-list">
+        <div
+          v-for="file in uploadedFiles"
+          :key="file.id"
+          class="uploaded-file-item mb-3 pa-3 rounded"
+        >
+          <div class="d-flex align-center">
+            <!-- Превью изображения или иконка файла -->
+            <div class="file-preview mr-3">
+              <v-img
+                v-if="isImage(file.type) && file.url"
+                :src="file.url"
+                :alt="file.name"
+                width="48"
+                height="48"
+                class="rounded cursor-pointer"
+                cover
+                @click="openImagePreview(file.url, file.name)"
+              />
+              <v-icon
+                v-else
+                :color="getFileIconColor(file.type)"
+                size="48"
+                class="rounded"
+              >
+                {{ getFileIcon(file.type) }}
+              </v-icon>
+            </div>
+
+            <!-- Информация о файле -->
+            <div class="flex-grow-1">
+              <p class="text-body-2 font-weight-medium mb-0">{{ file.name }}</p>
+              <p class="text-caption text-medium-emphasis mb-0">{{ formatFileSize(file.size) }}</p>
+            </div>
+
+            <!-- Статус -->
+            <v-chip size="small" color="success" variant="tonal">
+              Загружен
+            </v-chip>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- File Upload Section -->
     <div class="file-upload-section mt-6">
       <v-btn
@@ -132,5 +224,38 @@ const handleFilesUploaded = (files: any[]) => {
 .upload-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 8px 16px rgba(var(--v-theme-success), 0.3);
+}
+
+.uploaded-files-section {
+  border-top: 1px solid rgba(var(--v-theme-outline), 0.2);
+  padding-top: 16px;
+}
+
+.uploaded-file-item {
+  background-color: rgba(var(--v-theme-success), 0.05);
+  border: 1px solid rgba(var(--v-theme-success), 0.2);
+  transition: all 0.2s ease;
+}
+
+.uploaded-file-item:hover {
+  background-color: rgba(var(--v-theme-success), 0.1);
+  transform: translateY(-1px);
+}
+
+.file-preview {
+  flex-shrink: 0;
+}
+
+.file-preview .v-img {
+  border: 1px solid rgba(var(--v-theme-outline), 0.2);
+}
+
+.file-preview .v-icon {
+  background-color: rgba(var(--v-theme-surface-variant), 0.5);
+  border: 1px solid rgba(var(--v-theme-outline), 0.2);
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }
 </style>

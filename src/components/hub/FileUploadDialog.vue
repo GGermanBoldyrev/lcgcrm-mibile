@@ -189,10 +189,10 @@ const handleUploadFiles = async () => {
 
   try {
     // Отправляем файлы на сервер
-    await uploadFiles(selectionState.selectedFiles, props.documentId, props.userId)
+    const uploadedFiles = await uploadFiles(selectionState.selectedFiles, props.documentId, props.userId)
 
-    // Уведомляем о успешной загрузке
-    emit('uploaded', selectionState.selectedFiles)
+    // Уведомляем о успешной загрузке с данными от сервера
+    emit('uploaded', uploadedFiles)
     closeDialog()
   } catch (error: any) {
     console.error('Ошибка загрузки файлов:', error)

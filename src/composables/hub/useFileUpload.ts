@@ -17,39 +17,55 @@ export function useFileUpload() {
     progress: 0
   })
 
-  // Загрузка файлов на сервер
-  const uploadFiles = async (files: File[], documentId: string, userId: number): Promise<void> => {
+  // Загрузка файлов на сервер (по одному файлу)
+  const uploadFiles = async (files: File[], documentId: string, userId: number): Promise<UploadedFile[]> => {
     state.uploading = true
     state.error = null
     state.progress = 0
 
+    const uploadedFiles: UploadedFile[] = []
+
     try {
-      // Создаем FormData для загрузки
-      const formData = new FormData()
+      // Загружаем файлы по одному
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
 
-      // Добавляем documentId
-      formData.append('documentId', documentId)
+        // Создаем FormData для загрузки одного файла
+        const formData = new FormData()
+        formData.append('documentId', documentId)
+        formData.append('userId', userId.toString())
+        formData.append('file', file) // Отдельный файл, не массив
 
-      // Добавляем userId
-      formData.append('userId', userId.toString())
-
-      // Добавляем файлы
-      files.forEach(file => {
-        formData.append('files', file)
-      })
-
-      // Отправляем POST запрос
-      await api.post('/mobile/hub/copy', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.total) {
-            state.progress = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+        // Отправляем POST запрос для одного файла
+        const response = await api.post('/mobile/hub/copy', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          onUploadProgress: (progressEvent) => {
+            if (progressEvent.total) {
+              // Прогресс для текущего файла + уже загруженные файлы
+              const currentFileProgress = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+              const totalProgress = Math.round(((i * 100) + currentFileProgress) / files.length)
+              state.progress = totalProgress
+            }
           }
+        })
+
+        // Обрабатываем ответ сервера
+        if (response.data) {
+          const uploadedFile: UploadedFile = {
+            id: response.data.id || `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            url: response.data.url || URL.createObjectURL(file),
+            uploadedAt: new Date().toISOString()
+          }
+          uploadedFiles.push(uploadedFile)
         }
-      })
+      }
 
       state.uploading = false
       state.progress = 0
+      return uploadedFiles
     } catch (error: any) {
       state.uploading = false
       state.progress = 0
@@ -58,18 +74,6 @@ export function useFileUpload() {
     }
   }
 
-  // Мок-функция для загрузки файла (для обратной совместимости)
-  const uploadFile = async (file: File): Promise<UploadedFile> => {
-    await uploadFiles([file], 'mock-document-id', 1)
-    return {
-      id: `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      url: URL.createObjectURL(file),
-      uploadedAt: new Date().toISOString()
-    }
-  }
 
   // Удаление файла
   const removeFile = (fileId: string) => {
@@ -127,7 +131,6 @@ export function useFileUpload() {
   return {
     state,
     uploadFiles,
-    uploadFile,
     removeFile,
     clearFiles,
     isValidFileType,
